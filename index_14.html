@@ -1,0 +1,2691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#0a1f0a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="TobiGolf" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="description" content="TobiGolf — a custom group golf scoring format" />
+<title>TobiGolf</title>
+
+<link rel="manifest" href='data:application/manifest+json,{"name":"TobiGolf","short_name":"TobiGolf","start_url":".","scope":".","display":"standalone","background_color":"%230a1f0a","theme_color":"%230a1f0a","orientation":"portrait","icons":[{"src":"data:image/svg%2Bxml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%220%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%23173404%22/%3E%3Cstop offset=%221%22 stop-color=%22%2308200a%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22url(%23g)%22/%3E%3Ccircle cx=%22256%22 cy=%22240%22 r=%22130%22 fill=%22%23C0DD97%22/%3E%3Ccircle cx=%22256%22 cy=%22240%22 r=%22130%22 fill=%22none%22 stroke=%22%23639922%22 stroke-width=%226%22/%3E%3Ctext x=%22256%22 y=%22282%22 font-family=%22-apple-system,Helvetica,Arial,sans-serif%22 font-size=%22130%22 font-weight=%22700%22 fill=%22%23173404%22 text-anchor=%22middle%22%3ETG%3C/text%3E%3C/svg%3E","sizes":"any","type":"image/svg+xml","purpose":"any"}]}' />
+
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23173404'/%3E%3Cstop offset='1' stop-color='%2308200a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23g)'/%3E%3Ccircle cx='256' cy='240' r='130' fill='%23C0DD97'/%3E%3Ccircle cx='256' cy='240' r='130' fill='none' stroke='%23639922' stroke-width='6'/%3E%3Ctext x='256' y='282' font-family='-apple-system,Helvetica,Arial,sans-serif' font-size='130' font-weight='700' fill='%23173404' text-anchor='middle'%3ETG%3C/text%3E%3C/svg%3E" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23173404'/%3E%3Ccircle cx='256' cy='240' r='130' fill='%23C0DD97'/%3E%3Ctext x='256' y='282' font-family='-apple-system,Helvetica,Arial,sans-serif' font-size='130' font-weight='700' fill='%23173404' text-anchor='middle'%3ETG%3C/text%3E%3C/svg%3E" />
+
+<style>
+  :root {
+    --bg: #0d1810;
+    --bg-deep: #08110a;
+    --surface: #16241a;
+    --surface-2: #1f3024;
+    --surface-3: #28402e;
+    --text: #f0f5ee;
+    --text-muted: #8a9a8d;
+    --text-dim: #5a6a5d;
+    --border: rgba(192,221,151,0.10);
+    --border-strong: rgba(192,221,151,0.22);
+    --accent: #97C459;
+    --accent-bright: #C0DD97;
+    --accent-deep: #639922;
+    --accent-glow: rgba(151,196,89,0.15);
+    --accent-text: #173404;
+    --warn: #EF9F27;
+    --warn-light: #FAC775;
+    --warn-bg: rgba(239,159,39,0.12);
+    --warn-text: #FAEEDA;
+    --danger: #E24B4A;
+    --danger-bg: rgba(226,75,74,0.12);
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { background: var(--bg-deep); }
+  body {
+    font-family: var(--font);
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,153,34,0.08) 0%, transparent 60%),
+      var(--bg);
+    background-attachment: fixed;
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 1rem 1.25rem 2rem;
+  }
+
+  .h1 { font-size: 24px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; color: var(--text); }
+  .h2 { font-size: 19px; font-weight: 600; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .h3 { font-size: 15px; font-weight: 600; margin: 0 0 10px; letter-spacing: -0.005em; }
+  .muted { color: var(--text-muted); font-size: 13px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+  .card-2 { background: var(--surface-2); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+  .row { display: flex; align-items: center; gap: 10px; }
+  .spread { display: flex; justify-content: space-between; align-items: center; }
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  .btn {
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color: var(--accent-text);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    font-family: inherit;
+    letter-spacing: -0.01em;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset, 0 4px 14px -4px rgba(99,153,34,0.4);
+    transition: transform 0.05s, box-shadow 0.15s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+  .btn-2 {
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 11px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-2:active { transform: scale(0.98); }
+  .btn-2:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .btn-ghost {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    padding: 7px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+  }
+  .btn-ghost:active { transform: scale(0.97); background: var(--surface-2); }
+
+  .btn-danger {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 1px solid rgba(226,75,74,0.3);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .input.error, .num.error { border-color: var(--danger); box-shadow: 0 0 0 2px rgba(226,75,74,0.2); }
+  .input-error-msg { color: var(--danger); font-size: 12px; margin-top: 6px; font-weight: 500; }
+
+  .input, .num {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--bg-deep);
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+  }
+  .input:focus, .num:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .input::placeholder, .num::placeholder { color: var(--text-dim); }
+
+  .select {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--bg-deep);
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a9a8d' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  .select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+  .score-input {
+    width: 62px;
+    height: 48px;
+    text-align: center;
+    font-size: 19px;
+    font-weight: 700;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: inherit;
+  }
+  .score-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .score-input:disabled { background: var(--surface); opacity: 0.4; cursor: not-allowed; }
+  .score-input.picked { background: var(--warn-bg); border-color: var(--warn); color: var(--warn-light); }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    letter-spacing: -0.01em;
+  }
+  .pill.lead {
+    background: var(--accent-bright);
+    color: var(--accent-text);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .pill.zero { color: var(--text-dim); }
+
+  .strip-wrap { position: relative; margin-bottom: 12px; }
+  .strip-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 12px;
+    width: 24px;
+    background: linear-gradient(to right, transparent, var(--bg) 80%);
+    pointer-events: none;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+  .strip { display: flex; gap: 7px; overflow-x: auto; padding: 6px 2px 12px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .strip::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: 0 0 auto;
+    min-width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 700;
+    border: 1px solid var(--border-strong);
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--text-muted);
+    position: relative;
+    transition: transform 0.08s;
+  }
+  .chip:active { transform: scale(0.95); }
+  .chip.active {
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color: var(--accent-text);
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px -4px rgba(99,153,34,0.5);
+  }
+  .chip.done {
+    background: var(--accent-glow);
+    color: var(--accent-bright);
+    border-color: rgba(151,196,89,0.3);
+  }
+  .chip.locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .chip.locked:active { transform: none; }
+  .chip.skipped {
+    background: var(--bg-deep);
+    color: var(--text-dim);
+    border-color: var(--border);
+    text-decoration: line-through;
+    text-decoration-color: var(--text-dim);
+  }
+  .chip.chip-add {
+    background: transparent;
+    color: var(--accent);
+    border: 1px dashed var(--border-strong);
+    font-size: 18px;
+    font-weight: 400;
+  }
+  .chip.chip-add:active { transform: scale(0.95); background: var(--accent-glow); }
+  .chip .mult {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--warn);
+    color: var(--accent-text);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .player-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .player-row:last-child { border-bottom: none; }
+  .player-row.left { opacity: 0.5; }
+  .player-name { font-size: 15px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .player-name .hcap { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-left: 5px; padding: 1px 5px; background: var(--surface-2); border-radius: 4px; }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    padding: 4px;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+  }
+  .tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; border-radius: 7px; cursor: pointer; color: var(--text-muted); }
+  .tab.active { background: var(--surface-3); color: var(--text); }
+
+  .summary-row {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-row.left-row { opacity: 0.7; }
+  .rank {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+  .rank.first {
+    background: linear-gradient(135deg, var(--accent-bright) 0%, var(--accent) 100%);
+    color: var(--accent-text);
+    box-shadow: 0 2px 8px var(--accent-glow);
+  }
+  .rank.second { background: var(--surface-3); color: var(--accent-bright); }
+  .rank.third { background: var(--warn-bg); color: var(--warn); }
+  .pts-big { font-size: 22px; font-weight: 700; min-width: 40px; text-align: right; letter-spacing: -0.02em; }
+  .pts-was { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+
+  .special-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: end; margin-bottom: 10px; }
+  .field-label { display: block; font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .empty { text-align: center; color: var(--text-muted); font-size: 14px; padding: 2rem 1rem; }
+
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: flex; align-items: flex-end; justify-content: center; z-index: 100; padding: 1rem; padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 380px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
+  }
+  .modal-title { font-size: 18px; font-weight: 700; margin: 0 0 12px; letter-spacing: -0.01em; }
+
+  .winner-card {
+    background:
+      radial-gradient(ellipse at top right, rgba(192,221,151,0.15) 0%, transparent 60%),
+      linear-gradient(135deg, var(--accent-text) 0%, #08200a 100%);
+    color: white;
+    border: 1px solid rgba(151,196,89,0.3);
+    border-radius: var(--radius-xl);
+    padding: 1.75rem 1.5rem;
+    text-align: center;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .winner-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--accent-bright); margin-bottom: 8px; font-weight: 700; }
+  .winner-name { font-size: 30px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .winner-pts { font-size: 14px; color: var(--accent-bright); opacity: 0.9; }
+
+  .tbl { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .tbl th { text-align: center; padding: 8px 6px; color: var(--text-muted); font-weight: 600; }
+  .tbl th:first-child { text-align: left; }
+  .tbl td { text-align: center; padding: 8px 6px; }
+  .tbl td:first-child { text-align: left; font-weight: 600; }
+  .tbl tr { border-top: 1px solid var(--border); }
+  .tbl .gross { font-weight: 700; }
+  .tbl .pts { color: var(--text-muted); font-size: 11px; }
+  .tbl .totals-row { background: var(--surface-2); font-weight: 700; }
+  .tbl .totals-row td { color: var(--accent-bright); }
+  .tbl .left-cell { color: var(--text-dim); font-style: italic; }
+  .tbl .tobi-row td {
+    background: rgba(151,196,89,0.06);
+    color: var(--accent-bright);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 4px;
+    border-top: 1px dashed rgba(151,196,89,0.3);
+    border-bottom: 1px dashed rgba(151,196,89,0.3);
+  }
+  .tbl .tobi-row td:first-child {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+  }
+  .tbl .tobi-cell-from { color: var(--text-dim); font-style: italic; }
+  .tbl .tobi-cell-to { color: var(--accent-bright); }
+
+  .pickup-btn {
+    background: var(--warn-bg);
+    color: var(--warn);
+    border: 1px solid rgba(239,159,39,0.3);
+    border-radius: 7px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .pickup-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .pickup-btn.active {
+    background: var(--warn);
+    color: var(--accent-text);
+    border-color: var(--warn);
+  }
+
+  .mult-badge {
+    display: inline-block;
+    background: var(--warn);
+    color: var(--accent-text);
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 7px;
+    font-weight: 700;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .skip-badge {
+    display: inline-block;
+    background: var(--surface-3);
+    color: var(--text-muted);
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 7px;
+    font-weight: 700;
+    margin-left: 8px;
+    vertical-align: middle;
+    letter-spacing: 0.06em;
+  }
+  .pill-sub {
+    font-size: 0.7em;
+    color: var(--text-muted);
+    margin-left: 4px;
+    font-weight: 400;
+  }
+  .mode-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-weight: 700;
+    margin-left: 8px;
+    vertical-align: middle;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .mode-badge.mode-tobigolf {
+    background: var(--accent-glow);
+    color: var(--accent-bright);
+    border: 1px solid rgba(151,196,89,0.3);
+  }
+  .mode-badge.mode-standard {
+    background: var(--surface-3);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .left-tag { font-size: 11px; color: var(--text-dim); font-weight: 500; font-style: italic; }
+  .warn-banner { background: var(--warn-bg); color: var(--warn-light); border: 1px solid rgba(239,159,39,0.2); padding: 10px 13px; border-radius: var(--radius-md); font-size: 12px; margin-bottom: 14px; font-weight: 500; }
+
+  .home-hero { padding: 2rem 0 2.5rem; text-align: left; }
+  .home-hero h1 {
+    font-size: 38px;
+    margin: 0 0 6px;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent-bright) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .home-hero .tagline { color: var(--text-muted); font-size: 14px; }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+  }
+  .stat-card .label { color: var(--text-muted); font-size: 12px; margin-bottom: 4px; font-weight: 500; }
+  .stat-card .val { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+  .stat-card .val .diff { color: var(--text-muted); font-size: 13px; font-weight: 500; margin-left: 4px; }
+
+  /* Hide number input arrows */
+  input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number] { -moz-appearance: textfield; }
+
+  /* Distance tool */
+  .dist-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+  }
+  .dist-header {
+    padding: 12px 14px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .dist-readout {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent-bright);
+    letter-spacing: -0.02em;
+  }
+  .dist-readout-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .dist-map {
+    flex: 1;
+    width: 100%;
+    background: var(--bg-deep);
+    position: relative;
+  }
+  .dist-status {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--text);
+    background: var(--surface);
+    padding: 18px 22px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    max-width: 280px;
+    z-index: 500;
+  }
+  .dist-recenter {
+    position: absolute;
+    bottom: 18px; right: 18px;
+    width: 48px; height: 48px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    cursor: pointer;
+    color: var(--accent-bright);
+    font-size: 22px;
+  }
+  .dist-recenter:active { transform: scale(0.92); }
+  .leaflet-container { background: var(--bg-deep); }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="screen"></div>
+</div>
+
+<script>
+(function() {
+  const SK = 'tobigolf-state-v5';
+  const HK = 'tobigolf-history-v3';
+  const TK = 'tobigolf-tracker-v1';
+
+  let s = {
+    view: 'home',
+    round: null,
+    setup: { name: '', courseName: '', holes: 18, players: [{ name: '', shots: 0 }], specials: [], mode: null },
+    modal: null,
+    summaryRound: null
+  };
+
+  function load() { try { const r = localStorage.getItem(SK); if (r) Object.assign(s, JSON.parse(r)); } catch(e) {} s.distOpen = false; s.distStatus = null; s.distMeasurement = null; }
+  function saveS() { try { localStorage.setItem(SK, JSON.stringify(s)); } catch(e) {} }
+  function loadH() { try { return JSON.parse(localStorage.getItem(HK) || '[]'); } catch(e) { return []; } }
+  function saveH(h) { try { localStorage.setItem(HK, JSON.stringify(h)); } catch(e) {} }
+  function loadT() { try { return JSON.parse(localStorage.getItem(TK) || '{"name":"","courseData":{}}'); } catch(e) { return { name: '', courseData: {} }; } }
+  function saveT(t) { try { localStorage.setItem(TK, JSON.stringify(t)); } catch(e) {} }
+
+  function isFilled(v) { return v !== null && v !== undefined && v !== ''; }
+
+  function calcPoints(netScores) {
+    const valid = netScores.map((v, i) => ({ v, i })).filter(x => typeof x.v === 'number' && !isNaN(x.v));
+    if (valid.length === 0) return netScores.map(() => null);
+    const distinct = new Set(valid.map(x => x.v));
+    const allTied = distinct.size === 1 && valid.length > 1;
+    return netScores.map(v => {
+      if (typeof v !== 'number' || isNaN(v)) return null;
+      if (allTied) return 1;
+      const worse = new Set();
+      netScores.forEach(o => { if (typeof o === 'number' && !isNaN(o) && o > v) worse.add(o); });
+      return worse.size;
+    });
+  }
+
+  function getMult(h, specials) { const sp = specials.find(x => x.hole === h); return sp ? sp.mult : 1; }
+
+  function isLeaver(round, playerIdx) {
+    return !!(round.leftAfter && round.leftAfter[playerIdx]);
+  }
+
+  function activePlayerIndices(round, atHole) {
+    return round.players.map((p, i) => i).filter(i => {
+      const left = round.leftAfter && round.leftAfter[i];
+      return left === undefined || atHole <= left;
+    });
+  }
+
+  function getNetScore(round, holeNum, playerIdx) {
+    const raw = round.scores[holeNum]?.[playerIdx];
+    if (!isFilled(raw)) return null;
+    const gross = Number(raw);
+    if (isNaN(gross)) return null;
+    // No handicap shots on picked-up holes — prevents gaming the system
+    const isPickup = !!round.pickups?.[holeNum]?.[playerIdx];
+    if (isPickup) return gross;
+    const shots = round.players[playerIdx].shots || 0;
+    return gross - shots;
+  }
+
+  function calcHolePoints(round, holeNum) {
+    if (isHoleSkipped(round, holeNum)) return round.players.map(() => null);
+    const active = activePlayerIndices(round, holeNum);
+    const netByActive = active.map(i => getNetScore(round, holeNum, i));
+    const rawPts = calcPoints(netByActive);
+    const mult = getMult(holeNum, round.specials);
+    const result = round.players.map(() => null);
+    active.forEach((pi, ai) => {
+      if (rawPts[ai] !== null) result[pi] = rawPts[ai] * mult;
+    });
+    return result;
+  }
+
+  function rawPointsBeforeLeaving(round, playerIdx) {
+    // Sum of their hole-by-hole points up to and including their leaveHole (or all holes if not a leaver)
+    const leaveHole = round.leftAfter?.[playerIdx];
+    const maxH = leaveHole !== undefined ? leaveHole : round.holes;
+    let pts = 0;
+    for (let h = 1; h <= maxH; h++) {
+      const hp = calcHolePoints(round, h);
+      if (hp[playerIdx] !== null) pts += hp[playerIdx];
+    }
+    return pts;
+  }
+
+  function playerTotalInfo(round, playerIdx) {
+    const isLeft = isLeaver(round, playerIdx);
+    if (isLeft) {
+      // What they had at the moment they left = their accumulated points up to leaveHole
+      // (any transferReceived they themselves had stays on their record but is reset on leave)
+      const wasAt = rawPointsBeforeLeaving(round, playerIdx);
+      return { displayed: 0, wasAtLeave: wasAt, isLeaver: true };
+    }
+    let total = round.transferReceived?.[playerIdx] || 0;
+    total += rawPointsBeforeLeaving(round, playerIdx);
+    return { displayed: total, wasAtLeave: null, isLeaver: false };
+  }
+
+  function totals(round) {
+    return round.players.map((_, i) => playerTotalInfo(round, i).displayed);
+  }
+
+  function grossTotals(round) {
+    return round.players.map((_, i) => {
+      let total = 0;
+      const leaveHole = round.leftAfter?.[i];
+      const maxH = leaveHole !== undefined ? leaveHole : round.holes;
+      for (let h = 1; h <= maxH; h++) {
+        if (isHoleSkipped(round, h)) continue;
+        const v = round.scores[h]?.[i];
+        if (isFilled(v)) total += Number(v);
+      }
+      return total;
+    });
+  }
+
+  function parTotal(round) {
+    let p = 0;
+    for (let h = 1; h <= round.holes; h++) {
+      if (isHoleSkipped(round, h)) continue;
+      const par = round.pars?.[h];
+      if (isFilled(par)) p += Number(par);
+    }
+    return p;
+  }
+
+  function isHoleSkipped(round, holeNum) {
+    return !!(round.skipped && round.skipped[holeNum]);
+  }
+
+  function isStandardMode(round) {
+    return round.mode === 'standard';
+  }
+
+  // Get player's net score for a hole (for Standard mode display & ranking)
+  function netScore(round, holeNum, playerIdx) {
+    const raw = round.scores[holeNum]?.[playerIdx];
+    if (!isFilled(raw)) return null;
+    const gross = Number(raw);
+    if (isNaN(gross)) return null;
+    // Pick Up holes don't get handicap shots subtracted (same rule as in TobiGolf)
+    const isPickup = !!round.pickups?.[holeNum]?.[playerIdx];
+    if (isPickup) return gross;
+    const shots = round.players[playerIdx].shots || 0;
+    return gross - shots;
+  }
+
+  // Net total for a player (excludes leaver holes and skipped holes)
+  function netTotal(round, playerIdx) {
+    let total = 0;
+    const leaveHole = round.leftAfter?.[playerIdx];
+    const maxH = leaveHole !== undefined ? leaveHole : round.holes;
+    for (let h = 1; h <= maxH; h++) {
+      if (isHoleSkipped(round, h)) continue;
+      const n = netScore(round, h, playerIdx);
+      if (n !== null) total += n;
+    }
+    return total;
+  }
+
+  function playedCount(round) {
+    let played = 0;
+    for (let h = 1; h <= round.holes; h++) {
+      if (isHoleSkipped(round, h)) continue;
+      // A hole counts as played if at least one player has a score recorded
+      const scores = round.scores?.[h];
+      if (scores && scores.some(v => isFilled(v))) played++;
+    }
+    return played;
+  }
+
+  function skippedCount(round) {
+    if (!round.skipped) return 0;
+    return Object.values(round.skipped).filter(v => v).length;
+  }
+
+  function holesLabel(round) {
+    const played = playedCount(round);
+    if (played === round.holes) return `${round.holes} holes`;
+    return `${played} holes (of ${round.holes})`;
+  }
+
+  function isHoleStarted(round, holeNum) {
+    if (isHoleSkipped(round, holeNum)) return true; // skipped means "done with"
+    if (isFilled(round.pars?.[holeNum])) return true;
+    const scores = round.scores?.[holeNum];
+    if (scores && scores.some(v => isFilled(v))) return true;
+    const pickups = round.pickups?.[holeNum];
+    if (pickups && Object.values(pickups).some(v => v)) return true;
+    return false;
+  }
+
+  function isHoleComplete(round, holeNum) {
+    if (isHoleSkipped(round, holeNum)) return true; // skipped counts as complete (no scoring needed)
+    const par = round.pars?.[holeNum];
+    if (!isFilled(par)) return false;
+    const active = activePlayerIndices(round, holeNum);
+    if (active.length === 0) return false;
+    return active.every(pi => isFilled(round.scores[holeNum]?.[pi]));
+  }
+
+  function findBlanks(round) {
+    const blanks = [];
+    for (let h = 1; h <= round.holes; h++) {
+      if (isHoleSkipped(round, h)) continue;
+      if (!isFilled(round.pars?.[h])) blanks.push({ hole: h, type: 'par' });
+      const active = activePlayerIndices(round, h);
+      active.forEach(pi => {
+        if (!isFilled(round.scores[h]?.[pi])) blanks.push({ hole: h, type: 'score', player: pi });
+      });
+    }
+    return blanks;
+  }
+
+  function esc(x) { return String(x ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function render() {
+    const root = document.getElementById('screen');
+    let html = '';
+    if (s.view === 'home') html = vHome();
+    else if (s.view === 'setup') html = vSetup();
+    else if (s.view === 'play') html = vPlay();
+    else if (s.view === 'summary') html = vSummary();
+    else if (s.view === 'history') html = vHistory();
+    else if (s.view === 'rules') html = vRules();
+    else if (s.view === 'handicap') html = vHandicap();
+    else if (s.view === 'handicapHowto') html = vHandicapHowto();
+    if (s.modal) html += vModal();
+    root.innerHTML = html;
+    bind();
+    // Auto-scroll active chip into view
+    const activeChip = root.querySelector('.chip.active');
+    if (activeChip) {
+      activeChip.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'center' });
+    }
+    // Distance overlay is rendered into a separate root that persists across normal renders
+    renderDistance();
+  }
+
+  function renderDistance() {
+    let distRoot = document.getElementById('dist-root');
+    if (!s.distOpen) {
+      if (distRoot) distRoot.remove();
+      return;
+    }
+    // Already rendered? Don't re-render — would tear down the map
+    if (distRoot) return;
+    distRoot = document.createElement('div');
+    distRoot.id = 'dist-root';
+    distRoot.innerHTML = vDistance();
+    document.body.appendChild(distRoot);
+    // Bind action clicks within the overlay
+    distRoot.querySelectorAll('[data-a]').forEach(el => el.addEventListener('click', handle));
+    // Init map
+    if (!window._distMap) initDistanceMap();
+  }
+
+  function vHome() {
+    const has = !!s.round;
+    const h = loadH();
+    return `
+      <div class="home-hero">
+        <h1>TobiGolf</h1>
+        <p class="tagline">A different way to play</p>
+      </div>
+      ${has ? `
+        <div class="card" style="border-color: var(--border-strong);">
+          <div class="spread">
+            <div>
+              <div style="font-weight: 700; font-size: 15px; color: var(--accent-bright);">${esc(s.round.name) || 'Round in progress'}</div>
+              <div class="muted" style="margin-top: 2px;">${s.round.players.length} ${s.round.players.length === 1 ? 'player' : 'players'} · Hole ${s.round.currentHole} of ${s.round.holes}</div>
+            </div>
+            <button class="btn-2" data-a="resume" style="background: var(--accent-deep); color: white; border-color: var(--accent-deep);">Resume</button>
+          </div>
+        </div>
+      ` : ''}
+      <button class="btn" data-a="new" style="margin-bottom: 10px;">${has ? 'Start new round' : 'New round'}</button>
+      <button class="btn-2" data-a="history" style="width: 100%; margin-bottom: 10px;">Past rounds (${h.length})</button>
+      <button class="btn-2" data-a="handicap" style="width: 100%; margin-bottom: 10px;">Handicap</button>
+      <button class="btn-2" data-a="rules" style="width: 100%;">Rules</button>
+    `;
+  }
+
+  function vSetup() {
+    const o = s.setup;
+    // Compute validity
+    const holesValid = !o.holesError && o.holes >= 1 && o.holes <= 18;
+    const playersValid = o.players.length >= 1 && o.players.length <= 4 && o.players.every(p => p.name && p.name.trim());
+    const specialsValid = o.specials.every(sp => sp.hole >= 1 && sp.hole <= o.holes && sp.mult >= 2);
+    const isSoloSetup = o.players.length === 1;
+    const modeValid = isSoloSetup || o.mode === 'tobigolf' || o.mode === 'standard';
+    const canStart = holesValid && playersValid && specialsValid && modeValid;
+    const isStandard = o.mode === 'standard';
+    return `
+      <div class="spread" style="margin-bottom: 1.25rem;">
+        <h1 class="h1">New round</h1>
+        <button class="btn-ghost" data-a="home">Cancel</button>
+      </div>
+
+      ${!isSoloSetup ? `
+      <div class="card">
+        <label class="muted" style="display: block; margin-bottom: 8px; font-weight: 500;">Scoring format</label>
+        <select class="select" id="tg-mode">
+          <option value="" ${!o.mode ? 'selected' : ''}>Choose format…</option>
+          <option value="tobigolf" ${o.mode === 'tobigolf' ? 'selected' : ''}>TobiGolf — points-based</option>
+          <option value="standard" ${o.mode === 'standard' ? 'selected' : ''}>Standard — net stroke play</option>
+        </select>
+      </div>
+      ` : ''}
+
+      <div class="card">
+        <label class="muted" style="display: block; margin-bottom: 8px; font-weight: 500;">Round name (optional)</label>
+        <input class="input" id="tg-name" placeholder="e.g. Saturday at the Heath" value="${esc(o.name)}" />
+      </div>
+
+      <div class="card">
+        <label class="muted" style="display: block; margin-bottom: 8px; font-weight: 500;">Course name (optional)</label>
+        <input class="input" id="tg-course" placeholder="e.g. Royal St George's" value="${esc(o.courseName || '')}" />
+      </div>
+
+      <div class="card">
+        <label class="muted" style="display: block; margin-bottom: 8px; font-weight: 500;">Number of holes</label>
+        <input class="num ${o.holesError ? 'error' : ''}" type="number" min="1" max="18" id="tg-holes" value="${o.holes}" />
+        ${o.holesError ? `<div class="input-error-msg">${esc(o.holesError)}</div>` : ''}
+      </div>
+
+      <div class="card">
+        <div class="spread" style="margin-bottom: 12px;">
+          <h3 class="h3" style="margin: 0;">Players · ${o.players.length}</h3>
+          ${o.players.length < 4 ? `<button class="btn-2" data-a="addP">+ Add</button>` : `<span class="muted" style="font-size: 12px;">Max 4</span>`}
+        </div>
+        ${o.players.map((p, i) => `
+          <div style="display: grid; grid-template-columns: 1fr 110px auto; gap: 8px; margin-bottom: 10px; align-items: center;">
+            <input class="input" data-pn="${i}" value="${esc(p.name)}" placeholder="Name" />
+            <select class="select" data-ps="${i}" title="Handicap shots per hole">
+              <option value="0" ${p.shots === 0 ? 'selected' : ''}>0 shots</option>
+              <option value="1" ${p.shots === 1 ? 'selected' : ''}>1 / hole</option>
+              <option value="2" ${p.shots === 2 ? 'selected' : ''}>2 / hole</option>
+              <option value="3" ${p.shots === 3 ? 'selected' : ''}>3 / hole</option>
+            </select>
+            ${o.players.length > 1 ? `<button class="btn-ghost" data-a="rmP" data-i="${i}" style="padding: 8px 10px;">×</button>` : '<span></span>'}
+          </div>
+        `).join('')}
+        <p class="muted" style="margin: 8px 0 0; font-size: 12px;">${o.players.length === 1 ? 'Solo: just track your own scores against par.' : 'Shots per hole are subtracted from gross when calculating points.'}</p>
+      </div>
+
+      ${o.players.length > 1 && o.mode === 'tobigolf' ? `
+      <div class="card">
+        <div class="spread" style="margin-bottom: 12px;">
+          <h3 class="h3" style="margin: 0;">Special holes</h3>
+          <button class="btn-2" data-a="addS">+ Add</button>
+        </div>
+        ${o.specials.length === 0 ? `<p class="muted" style="margin: 0;">Optional. Special holes have a points multiplier (×2, ×3, etc).</p>` : `
+          <div class="special-row">
+            <div><span class="field-label">Hole number</span></div>
+            <div><span class="field-label">Multiplier</span></div>
+            <span></span>
+          </div>
+        `}
+        ${o.specials.map((sp, i) => `
+          <div class="special-row">
+            <input class="num" type="number" min="1" max="${o.holes}" value="${sp.hole}" data-sh="${i}" placeholder="e.g. 18" />
+            <input class="num" type="number" min="2" max="10" value="${sp.mult}" data-sm="${i}" placeholder="e.g. 2" />
+            <button class="btn-ghost" data-a="rmS" data-i="${i}" style="padding: 8px 10px;">×</button>
+          </div>
+        `).join('')}
+      </div>
+      ` : ''}
+
+      <button class="btn" data-a="start" ${canStart ? '' : 'disabled'}>Start round</button>
+    `;
+  }
+
+  function vPlay() {
+    const r = s.round;
+    if (!r) { s.view = 'home'; return vHome(); }
+    const tab = r.tab || 'score';
+    const activeCount = activePlayerIndices(r, r.currentHole).length;
+    const totalPlayers = r.players.length;
+    const someLeft = activeCount < totalPlayers;
+    const holeStarted = isHoleStarted(r, r.currentHole);
+    const tobiDisabled = activeCount < 2 || holeStarted;
+    return `
+      <div class="spread" style="margin-bottom: 1.25rem;">
+        <div>
+          <h1 class="h1">${esc(r.name) || 'Round'}</h1>
+          <p class="muted">${someLeft ? `${activeCount} active · ${totalPlayers - activeCount} left` : `${totalPlayers} players`} · ${holesLabel(r)}</p>
+        </div>
+        <button class="btn-ghost" data-a="home">Home</button>
+      </div>
+
+      <div class="tabs">
+        <div class="tab ${tab === 'score' ? 'active' : ''}" data-a="tab" data-t="score">Score</div>
+        <div class="tab ${tab === 'totals' ? 'active' : ''}" data-a="tab" data-t="totals">Totals</div>
+      </div>
+
+      ${tab === 'score' ? vScoreTab(r) : vTotalsTab(r)}
+
+      <div class="divider"></div>
+      ${r.players.length > 1 && !isStandardMode(r) ? `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+          <button class="btn-2" data-a="tobi" ${tobiDisabled ? 'disabled' : ''}>Tobi Rule</button>
+          <button class="btn-2" data-a="finish" ${holeStarted ? 'disabled' : ''}>Finish round</button>
+        </div>
+        ${holeStarted ? `<p class="muted" style="text-align: center; margin: -2px 0 8px; font-size: 11px;">Tobi Rule and Finish are available before scoring this hole.</p>` : ''}
+      ` : `
+        <button class="btn-2" data-a="finish" style="width: 100%; margin-bottom: 8px;" ${holeStarted ? 'disabled' : ''}>Finish round</button>
+        ${holeStarted ? `<p class="muted" style="text-align: center; margin: -2px 0 8px; font-size: 11px;">Finish is available before scoring this hole.</p>` : ''}
+      `}
+      <button class="btn-danger" data-a="abandon" style="width: 100%;">Abandon round</button>
+    `;
+  }
+
+  function vScoreTab(r) {
+    const h = r.currentHole;
+    const mult = getMult(h, r.specials);
+    const par = r.pars?.[h];
+    const parSet = isFilled(par);
+    const active = activePlayerIndices(r, h);
+    const allPts = calcHolePoints(r, h);
+    const validPts = allPts.filter(p => p !== null);
+    const maxPts = validPts.length ? Math.max(...validPts) : 0;
+    const allEntered = active.every(pi => isFilled(r.scores[h]?.[pi]));
+    // For Standard mode: find lowest net score on this hole (the "lead" for the hole)
+    const standard = isStandardMode(r);
+    const holeNets = active.map(pi => netScore(r, h, pi));
+    const validNets = holeNets.filter(n => n !== null);
+    const minNet = validNets.length ? Math.min(...validNets) : null;
+    const holeComplete = isHoleComplete(r, h);
+    const isLast = h === r.holes;
+    const isSolo = r.players.length === 1;
+
+    return `
+      <div class="strip-wrap">
+        <div class="strip">
+          ${(() => {
+            // Find the highest hole that's been started or is current — anything beyond that is locked
+            let furthestReached = h;
+            for (let n = 1; n <= r.holes; n++) {
+              if (isHoleStarted(r, n) || isHoleComplete(r, n)) furthestReached = Math.max(furthestReached, n);
+            }
+            const chips = Array.from({length: r.holes}, (_, i) => {
+              const num = i + 1;
+              const m = getMult(num, r.specials);
+              const skipped = isHoleSkipped(r, num);
+              const done = isHoleComplete(r, num) && !skipped;
+              const locked = num > furthestReached;
+              let cls = '';
+              if (skipped) cls = 'skipped';
+              else if (num === h) cls = 'active';
+              else if (done) cls = 'done';
+              else if (locked) cls = 'locked';
+              return `<div class="chip ${cls}" ${locked ? '' : `data-a="goto" data-h="${num}"`}>${num}${m > 1 ? `<span class="mult">×${m}</span>` : ''}</div>`;
+            }).join('');
+            const addBtn = r.holes < 18 ? `<div class="chip chip-add" data-a="addHole" title="Add hole">+</div>` : '';
+            return chips + addBtn;
+          })()}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="spread" style="margin-bottom: 14px;">
+          <h2 class="h2" style="margin: 0;">Hole ${h}${mult > 1 ? `<span class="mult-badge">×${mult}</span>` : ''}${isHoleSkipped(r, h) ? `<span class="skip-badge">SKIPPED</span>` : ''}</h2>
+        </div>
+
+        ${isHoleSkipped(r, h) ? `
+          <div style="padding: 1.5rem 0.5rem; text-align: center;">
+            <p class="muted" style="margin: 0 0 16px; font-size: 14px;">This hole has been skipped. It won't count toward scores or your handicap.</p>
+            <button class="btn-2" data-a="unskip" style="max-width: 200px; margin: 0 auto;">Un-skip this hole</button>
+          </div>
+        ` : `
+          <div style="display: grid; grid-template-columns: 80px 1fr; gap: 10px; align-items: start; margin-bottom: 14px;">
+            <label class="muted" style="font-size: 13px; font-weight: 500; padding-top: 12px;">Par</label>
+            <div>
+              <input class="num ${r.parError?.[h] ? 'error' : ''}" type="number" id="tg-par" value="${par ?? ''}" placeholder="Par" style="height: 40px;" />
+              ${r.parError?.[h] ? `<div class="input-error-msg">${esc(r.parError[h])}</div>` : ''}
+            </div>
+          </div>
+
+          ${!isHoleStarted(r, h) ? `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+              <button class="btn-2" data-a="skip" style="font-size: 13px; padding: 8px;">Skip this hole</button>
+              <button class="btn-2" data-a="distance" style="font-size: 13px; padding: 8px;">📍 Distance</button>
+            </div>
+          ` : `
+            <button class="btn-2" data-a="distance" style="width: 100%; margin-bottom: 14px; font-size: 13px; padding: 8px;">📍 Distance</button>
+          `}
+
+          ${!parSet ? `<div class="warn-banner">Set the par for this hole to enter scores.</div>` : ''}
+
+          ${r.players.map((p, i) => {
+            const isActive = active.includes(i);
+            const left = r.leftAfter && r.leftAfter[i];
+            if (!isActive) {
+              return `
+                <div class="player-row left">
+                  <span class="player-name">${esc(p.name)} <span class="left-tag">— ${left === 0 ? 'left before play' : `left after hole ${left}`}</span></span>
+                  <span></span><span></span><span></span>
+                </div>
+              `;
+            }
+            const v = r.scores[h]?.[i];
+            const valStr = !isFilled(v) ? '' : v;
+            const isPick = !!r.pickups?.[h]?.[i];
+            const pts = allPts[i];
+            const playerNet = netScore(r, h, i);
+            const playerShots = p.shots || 0;
+            let pillHTML;
+            if (isSolo) {
+              pillHTML = '';
+            } else if (standard) {
+              // Standard mode: show net (with gross in brackets if shots applied)
+              const isLowest = playerNet !== null && playerNet === minNet && allEntered && minNet !== null;
+              const pillText = playerNet === null ? '—' : (playerShots > 0 && !isPick ? `${playerNet}<span class="pill-sub">(${v})</span>` : `${playerNet}`);
+              pillHTML = `<span class="pill ${isLowest ? 'lead' : ''}">${pillText}</span>`;
+            } else {
+              // TobiGolf mode: show points
+              pillHTML = `<span class="pill ${pts === maxPts && maxPts > 0 && allEntered ? 'lead' : ''} ${pts === 0 ? 'zero' : ''}">${pts === null ? '—' : pts}</span>`;
+            }
+            return `
+              <div class="player-row" ${isSolo ? 'style="grid-template-columns: 1fr auto auto;"' : ''}>
+                <span class="player-name">${esc(p.name)}${p.shots > 0 ? `<span class="hcap">−${p.shots}</span>` : ''}</span>
+                <button class="pickup-btn ${isPick ? 'active' : ''}" data-a="pickup" data-i="${i}" ${!parSet ? 'disabled' : ''}>Pick up</button>
+                <input type="number" inputmode="numeric" pattern="[0-9]*" class="score-input ${isPick ? 'picked' : ''}" data-si="${i}" value="${valStr}" placeholder="—" ${!parSet ? 'disabled' : ''} />
+                ${pillHTML}
+              </div>
+            `;
+          }).join('')}
+        `}
+      </div>
+
+      <div class="row" style="gap: 8px;">
+        <button class="btn-2" data-a="prev" style="flex: 1;" ${h === 1 ? 'disabled' : ''}>← Prev</button>
+        <button class="btn-2" data-a="next" style="flex: 1; ${holeComplete ? 'background: var(--accent-deep); color: white; border-color: var(--accent-deep);' : ''}" ${!holeComplete ? 'disabled' : ''}>${isLast ? 'Finish round →' : 'Next →'}</button>
+      </div>
+      ${!holeComplete && !isHoleSkipped(r, h) ? `<p class="muted" style="text-align: center; margin: 10px 0 0; font-size: 12px;">Fill in par and all active scores to continue.</p>` : ''}
+    `;
+  }
+
+  function vTotalsTab(r) {
+    const isSolo = r.players.length === 1;
+    if (isSolo) {
+      const gt = grossTotals(r)[0];
+      const par = parTotal(r);
+      const diff = par ? gt - par : null;
+      const diffStr = diff === null ? '' : (diff === 0 ? 'E' : (diff > 0 ? `+${diff}` : `${diff}`));
+      return `
+        <div class="card">
+          <h3 class="h3">Your round</h3>
+          <div style="display: flex; align-items: baseline; gap: 12px;">
+            <span style="font-size: 32px; font-weight: 700; letter-spacing: -0.02em;">${gt}</span>
+            ${par ? `<span class="muted" style="font-size: 15px;">vs par ${par}${diffStr ? ` &middot; <span style="color: var(--accent-bright); font-weight: 600;">${diffStr}</span>` : ''}</span>` : ''}
+          </div>
+        </div>
+        ${vHoleByHole(r)}
+      `;
+    }
+    if (isStandardMode(r)) {
+      // Rank by lowest net total
+      const par = parTotal(r);
+      const ranked = r.players.map((p, i) => {
+        const left = r.leftAfter?.[i];
+        const gross = grossTotals(r)[i];
+        const net = netTotal(r, i);
+        return { name: p.name, idx: i, left, gross, net, shots: p.shots || 0 };
+      }).sort((a, b) => {
+        // Leavers go last
+        const aLeft = a.left !== undefined;
+        const bLeft = b.left !== undefined;
+        if (aLeft && !bLeft) return 1;
+        if (!aLeft && bLeft) return -1;
+        return a.net - b.net; // lowest net wins
+      });
+      return `
+        <div class="card">
+          <h3 class="h3">Standings</h3>
+          ${ranked.map((p, rank) => `
+            <div class="summary-row ${p.left !== undefined ? 'left-row' : ''}">
+              <span class="rank ${rank === 0 ? 'first' : rank === 1 ? 'second' : rank === 2 ? 'third' : ''}">${rank + 1}</span>
+              <span class="player-name">${esc(p.name)}${p.shots > 0 ? `<span class="hcap">−${p.shots}</span>` : ''}${p.left !== undefined ? (p.left === 0 ? `<span class="left-tag"> · left before play</span>` : `<span class="left-tag"> · left after ${p.left}</span>`) : ''}</span>
+              <div style="text-align: right;">
+                <div class="pts-big">${p.net}${p.shots > 0 ? `<span class="pill-sub">(${p.gross})</span>` : ''}</div>
+                ${par ? `<div class="muted" style="font-size: 11px;">vs par ${par}: ${p.net - par >= 0 ? '+' : ''}${p.net - par}</div>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        ${vHoleByHole(r)}
+      `;
+    }
+    const ranked = r.players.map((p, i) => {
+      const info = playerTotalInfo(r, i);
+      return { name: p.name, info, idx: i, left: r.leftAfter?.[i] };
+    }).sort((a, b) => {
+      if (a.info.isLeaver && !b.info.isLeaver) return 1;
+      if (!a.info.isLeaver && b.info.isLeaver) return -1;
+      return b.info.displayed - a.info.displayed;
+    });
+    return `
+      <div class="card">
+        <h3 class="h3">Standings</h3>
+        ${ranked.map((p, rank) => `
+          <div class="summary-row ${p.info.isLeaver ? 'left-row' : ''}">
+            <span class="rank ${rank === 0 ? 'first' : rank === 1 ? 'second' : rank === 2 ? 'third' : ''}">${rank + 1}</span>
+            <span class="player-name">${esc(p.name)}${p.left !== undefined ? (p.left === 0 ? `<span class="left-tag"> · left before play</span>` : `<span class="left-tag"> · left after ${p.left}</span>`) : ''}</span>
+            <div style="text-align: right;">
+              <div class="pts-big">${p.info.displayed}${p.info.isLeaver ? ` <span class="pts-was">(was ${p.info.wasAtLeave})</span>` : ''}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      ${vHoleByHole(r)}
+    `;
+  }
+
+  function vHoleByHole(r) {
+    const gt = grossTotals(r);
+    const pt = parTotal(r);
+    const isSolo = r.players.length === 1;
+    const standard = isStandardMode(r);
+    const transfers = r.transfers || [];
+
+    // Build rows: for each hole, render the hole row, and BEFORE it render any transfer rows that happened at that hole
+    const rows = [];
+    for (let i = 0; i < r.holes; i++) {
+      const hn = i + 1;
+      // Insert any transfer events that happened AT this hole
+      transfers.filter(t => t.atHole === hn).forEach(t => {
+        rows.push(`
+          <tr class="tobi-row">
+            <td>Tobi</td>
+            <td></td>
+            ${r.players.map((_, pi) => {
+              if (pi === t.fromIdx) return `<td class="tobi-cell-from">leaving</td>`;
+              if (pi === t.toIdx) return `<td class="tobi-cell-to">+${t.points} from ${esc(r.players[t.fromIdx].name).slice(0,5)}</td>`;
+              return `<td></td>`;
+            }).join('')}
+          </tr>
+        `);
+      });
+
+      const m = getMult(hn, r.specials);
+      const par = r.pars?.[hn];
+      const pts = standard ? null : calcHolePoints(r, hn);
+      const skipped = isHoleSkipped(r, hn);
+      if (skipped) {
+        rows.push(`
+          <tr style="opacity: 0.5;">
+            <td>${hn}</td>
+            <td class="pts left-cell">skipped</td>
+            ${r.players.map(() => `<td class="left-cell">—</td>`).join('')}
+          </tr>
+        `);
+        continue;
+      }
+      rows.push(`
+        <tr>
+          <td>${hn}${m > 1 ? `<span style="color: var(--warn); font-size: 10px;"> ×${m}</span>` : ''}</td>
+          <td class="pts">${par ?? '—'}</td>
+          ${r.players.map((p, pi) => {
+            const v = r.scores[hn]?.[pi];
+            const isPick = r.pickups?.[hn]?.[pi];
+            const left = r.leftAfter?.[pi];
+            if (left !== undefined && hn > left) return `<td class="left-cell">—</td>`;
+            if (!isFilled(v)) return `<td class="pts">—</td>`;
+            if (isSolo) return `<td><span class="gross">${v}${isPick ? '*' : ''}</span></td>`;
+            if (standard) {
+              const shots = p.shots || 0;
+              const net = isPick ? Number(v) : Number(v) - shots;
+              // Show net as primary, gross in brackets if shots applied (and it's not a pickup)
+              if (shots > 0 && !isPick) {
+                return `<td><span class="gross">${net}</span> <span class="pts">(${v})</span></td>`;
+              }
+              return `<td><span class="gross">${v}${isPick ? '*' : ''}</span></td>`;
+            }
+            return `<td><span class="gross">${v}${isPick ? '*' : ''}</span> <span class="pts">(${pts[pi]})</span></td>`;
+          }).join('')}
+        </tr>
+      `);
+    }
+
+    return `
+      <div class="card">
+        <h3 class="h3">Hole by hole</h3>
+        <div style="overflow-x: auto;">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Hole</th>
+                <th>Par</th>
+                ${r.players.map(p => `<th>${esc(p.name.slice(0, 6))}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.join('')}
+              <tr class="totals-row">
+                <td>Total</td>
+                <td>${pt || '—'}</td>
+                ${gt.map((g, pi) => {
+                  const left = r.leftAfter?.[pi];
+                  if (left !== undefined && left === 0) return `<td>${g}</td>`;
+                  if (isSolo) return `<td>${g}</td>`;
+                  if (standard) {
+                    const shots = r.players[pi].shots || 0;
+                    const net = netTotal(r, pi);
+                    // Net is primary, gross secondary
+                    return `<td>${net}${shots > 0 ? ` <span class="pts">(${g})</span>` : ''}</td>`;
+                  }
+                  const info = playerTotalInfo(r, pi);
+                  return `<td>${g} <span class="pts">(${info.displayed})</span></td>`;
+                }).join('')}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted" style="margin: 10px 0 0; font-size: 11px;">* = pick up (par + 4)</p>
+      </div>
+    `;
+  }
+
+  function vSummary() {
+    const r = s.summaryRound || s.round;
+    if (!r) return vHome();
+    const isSolo = r.players.length === 1;
+    const fromHistory = s.summaryRound && s.summaryRound !== s.round;
+    const gt = grossTotals(r);
+    const par = parTotal(r);
+
+    if (isSolo) {
+      const grossScore = gt[0];
+      const diff = par ? grossScore - par : null;
+      const diffStr = diff === null ? '' : (diff === 0 ? 'E' : (diff > 0 ? `+${diff}` : `${diff}`));
+      return `
+        <div class="spread" style="margin-bottom: 1.25rem;">
+          <h1 class="h1">${esc(r.name) || 'Round summary'}</h1>
+          <button class="btn-ghost" data-a="${fromHistory ? 'history' : 'home'}">Done</button>
+        </div>
+
+        <div class="winner-card">
+          <div class="winner-label">Round complete</div>
+          <h2 class="winner-name">${grossScore}</h2>
+          <div class="winner-pts">${par ? `vs par ${par}${diffStr ? ` &middot; ${diffStr}` : ''}` : 'gross score'}</div>
+        </div>
+
+        ${vHoleByHole(r)}
+
+        ${!fromHistory ? `
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px;">
+            <button class="btn-2" data-a="discardSummary">Discard</button>
+            <button class="btn" data-a="saveSummary">Save round</button>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    if (isStandardMode(r)) {
+      const ranked = r.players.map((p, i) => {
+        const left = r.leftAfter?.[i];
+        const gross = gt[i];
+        const net = netTotal(r, i);
+        return { name: p.name, idx: i, left, gross, net, shots: p.shots || 0 };
+      }).sort((a, b) => {
+        const aLeft = a.left !== undefined;
+        const bLeft = b.left !== undefined;
+        if (aLeft && !bLeft) return 1;
+        if (!aLeft && bLeft) return -1;
+        return a.net - b.net;
+      });
+      const winnerStd = ranked[0];
+      const winnerDiff = par ? winnerStd.net - par : null;
+      const winnerDiffStr = winnerDiff === null ? '' : (winnerDiff === 0 ? 'E' : (winnerDiff > 0 ? `+${winnerDiff}` : `${winnerDiff}`));
+      return `
+        <div class="spread" style="margin-bottom: 1.25rem;">
+          <h1 class="h1">${esc(r.name) || 'Round summary'}</h1>
+          <button class="btn-ghost" data-a="${fromHistory ? 'history' : 'home'}">Done</button>
+        </div>
+
+        <div class="winner-card">
+          <div class="winner-label">Winner</div>
+          <h2 class="winner-name">${esc(winnerStd.name)}</h2>
+          <div class="winner-pts">Net ${winnerStd.net}${winnerStd.shots > 0 ? ` (gross ${winnerStd.gross})` : ''}${par ? ` &middot; ${winnerDiffStr || 'E'}` : ''}</div>
+        </div>
+
+        <div class="card">
+          <h3 class="h3">Final standings</h3>
+          ${ranked.map((p, rank) => {
+            const pdiff = par ? p.net - par : null;
+            const pdiffStr = pdiff === null ? '' : (pdiff === 0 ? 'E' : (pdiff > 0 ? `+${pdiff}` : `${pdiff}`));
+            return `
+              <div class="summary-row ${p.left !== undefined ? 'left-row' : ''}">
+                <span class="rank ${rank === 0 ? 'first' : rank === 1 ? 'second' : rank === 2 ? 'third' : ''}">${rank + 1}</span>
+                <span class="player-name">${esc(p.name)}${p.shots > 0 ? `<span class="hcap">−${p.shots}</span>` : ''}${p.left !== undefined ? (p.left === 0 ? `<span class="left-tag"> · left before play</span>` : `<span class="left-tag"> · left after ${p.left}</span>`) : ''}</span>
+                <div style="text-align: right;">
+                  <div class="pts-big">${p.net}${p.shots > 0 ? `<span class="pill-sub">(${p.gross})</span>` : ''}</div>
+                  ${par && p.left === undefined ? `<div class="muted" style="font-size: 11px;">${pdiffStr}</div>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        ${vHoleByHole(r)}
+
+        ${!fromHistory ? `
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px;">
+            <button class="btn-2" data-a="discardSummary">Discard</button>
+            <button class="btn" data-a="saveSummary">Save round</button>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    const ranked = r.players.map((p, i) => {
+      const info = playerTotalInfo(r, i);
+      return { name: p.name, info, idx: i, left: r.leftAfter?.[i] };
+    }).sort((a, b) => {
+      if (a.info.isLeaver && !b.info.isLeaver) return 1;
+      if (!a.info.isLeaver && b.info.isLeaver) return -1;
+      return b.info.displayed - a.info.displayed;
+    });
+    const winner = ranked[0];
+
+    return `
+      <div class="spread" style="margin-bottom: 1.25rem;">
+        <h1 class="h1">${esc(r.name) || 'Round summary'}</h1>
+        <button class="btn-ghost" data-a="${fromHistory ? 'history' : 'home'}">Done</button>
+      </div>
+
+      <div class="winner-card">
+        <div class="winner-label">Winner</div>
+        <h2 class="winner-name">${esc(winner.name)}</h2>
+        <div class="winner-pts">${winner.info.displayed} points</div>
+      </div>
+
+      <div class="card">
+        <h3 class="h3">Final standings</h3>
+        ${ranked.map((p, rank) => `
+          <div class="summary-row ${p.info.isLeaver ? 'left-row' : ''}">
+            <span class="rank ${rank === 0 ? 'first' : rank === 1 ? 'second' : rank === 2 ? 'third' : ''}">${rank + 1}</span>
+            <span class="player-name">${esc(p.name)}${p.left !== undefined ? (p.left === 0 ? `<span class="left-tag"> · left before play</span>` : `<span class="left-tag"> · left after ${p.left}</span>`) : ''}</span>
+            <div style="text-align: right;">
+              <div class="pts-big">${p.info.displayed}${p.info.isLeaver ? ` <span class="pts-was">(was ${p.info.wasAtLeave})</span>` : ''}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="card-2">
+        <h3 class="h3" style="margin-bottom: 12px;">Gross & par</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+          ${r.players.map((p, i) => {
+            const isLeft = isLeaver(r, i);
+            const diff = par && !isLeft ? gt[i] - par : null;
+            const diffStr = diff === null ? '' : (diff === 0 ? 'E' : (diff > 0 ? `+${diff}` : `${diff}`));
+            return `
+              <div class="stat-card" ${isLeft ? 'style="opacity: 0.6;"' : ''}>
+                <div class="label">${esc(p.name)}${isLeft ? ' · left' : ''}</div>
+                <div class="val">${gt[i]}${diffStr ? `<span class="diff">(${diffStr})</span>` : ''}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <div class="muted" style="font-size: 12px;">Course par: ${par || '—'}</div>
+      </div>
+
+      ${vHoleByHole(r)}
+
+      ${!fromHistory ? `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px;">
+          <button class="btn-2" data-a="discardSummary">Discard</button>
+          <button class="btn" data-a="saveSummary">Save round</button>
+        </div>
+      ` : ''}
+    `;
+  }
+
+  function vRules() {
+    return `
+      <div class="spread" style="margin-bottom: 1.25rem;">
+        <h1 class="h1">Rules</h1>
+        <button class="btn-ghost" data-a="home">Done</button>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">The basics</h3>
+        <p style="margin: 0 0 12px; font-size: 14px; line-height: 1.6; color: var(--text);">
+          TobiGolf is a group scoring format. Everyone plays the hole, lowest score wins points based on rank. Higher total points at the end of the round wins.
+        </p>
+        <p style="margin: 0 0 12px; font-size: 14px; line-height: 1.6; color: var(--text);">
+          Best with 2&ndash;4 players. Solo works too if you just want to track your own round.
+        </p>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text);">
+          For groups who'd rather skip the points format, there's also a <strong>Standard mode</strong> &mdash; just plain net stroke play, lowest total wins. Pick your format when you set up the round.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">Points per hole</h3>
+        <p style="margin: 0 0 10px; font-size: 14px; line-height: 1.6; color: var(--text);">
+          Each player's points on a hole = the number of distinct scores worse than theirs.
+        </p>
+        <p style="margin: 0 0 10px; font-size: 14px; line-height: 1.6; color: var(--text);">
+          So with 4 players, the lowest score gets 3 points, next gets 2, then 1, then 0. Ties share the lower position &mdash; if two players tie for first, they both get 2 points (not 3), third place gets 1, last gets 0.
+        </p>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text);">
+          If everyone ties on a hole, everyone gets 1 point. No one walks away with nothing.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">Special holes</h3>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text);">
+          Pick any holes to count for double, triple, or any multiplier you want. A common choice is the last hole &times;2 to keep things tense to the finish. The all-tie consolation point also gets multiplied.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">Pick Up</h3>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text);">
+          If you've blown up on a hole and don't want to keep going, tap Pick Up. It records your score as par + 4 (a quadruple bogey). Points are still calculated normally, so you'll usually take last place on that hole.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">Tobi Rule</h3>
+        <p style="margin: 0 0 10px; font-size: 14px; line-height: 1.6; color: var(--text);">
+          If a player has to leave mid-round, use the Tobi Rule. Their points so far transfer to whoever you choose, and they're removed from the rest of the round.
+        </p>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text);">
+          Only available before scoring starts on a hole. The previous hole was the leaver's last.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">Handicap shots</h3>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text);">
+          Optional. Set up to 3 shots per hole per player to even things out. Shots come off the gross score before points are calculated, but the gross stays as the actual strokes shot.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">Why it works</h3>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text);">
+          A bad hole doesn't kill your round &mdash; you can still pick up points on the next one. Special hole multipliers mean a comeback is always possible. Everyone stays in the game.
+        </p>
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // HANDICAP TRACKER LOGIC
+  // ============================================================
+
+  // WHS-style best-of-N lookup table: [bestN, adjustment]
+  // Given how many qualifying rounds (with full course data) the player has,
+  // returns how many of the lowest differentials to average and any adjustment.
+  function bestOfLookup(numRounds) {
+    if (numRounds < 3) return null;
+    if (numRounds === 3) return { count: 1, adjust: -2 };
+    if (numRounds === 4) return { count: 1, adjust: -1 };
+    if (numRounds === 5) return { count: 1, adjust: 0 };
+    if (numRounds === 6) return { count: 2, adjust: -1 };
+    if (numRounds <= 8) return { count: 2, adjust: 0 };
+    if (numRounds <= 11) return { count: 3, adjust: 0 };
+    if (numRounds <= 14) return { count: 4, adjust: 0 };
+    if (numRounds <= 16) return { count: 5, adjust: 0 };
+    if (numRounds <= 18) return { count: 6, adjust: 0 };
+    if (numRounds === 19) return { count: 7, adjust: 0 };
+    return { count: 8, adjust: 0 };
+  }
+
+  // Get rounds matching tracker name. Returns rounds in chronological order (oldest first).
+  // Each round annotated with: courseRating, slopeRating from tracker.courseData (keyed by round savedAt timestamp).
+  function getTrackedRounds() {
+    const t = loadT();
+    if (!t.name || !t.name.trim()) return [];
+    const trackerName = t.name.trim().toLowerCase();
+    const allRounds = loadH();
+    return allRounds
+      .filter(r => r.holes === 18 && playedCount(r) === 18) // only rounds where all 18 holes were played
+      .filter(r => r.players?.[0]?.name?.trim().toLowerCase() === trackerName)
+      .map(r => {
+        const courseInfo = t.courseData[r.savedAt] || {};
+        return {
+          ...r,
+          courseRating: courseInfo.courseRating,
+          slopeRating: courseInfo.slopeRating,
+          courseNameOverride: courseInfo.courseName
+        };
+      })
+      .sort((a, b) => a.savedAt - b.savedAt); // oldest first for chronological handicap progression
+  }
+
+  // Player 1's gross score for a round (only P1 contributes to handicap)
+  function p1Gross(round) {
+    let total = 0;
+    for (let h = 1; h <= round.holes; h++) {
+      if (isHoleSkipped(round, h)) continue;
+      const v = round.scores[h]?.[0];
+      if (isFilled(v)) total += Number(v);
+    }
+    return total;
+  }
+
+  // Adjusted Gross Score for a round given the handicap as it stood before this round.
+  // Cap each hole at par + 2 + round(handicap / 18). For first round (handicap = null),
+  // use estimated handicap if user provided one, otherwise Double Bogey cap (par + 2).
+  function calcAGS(round, handicapBefore, estimatedHandicap) {
+    const effectiveHandicap = handicapBefore !== null ? handicapBefore : (estimatedHandicap !== null && estimatedHandicap !== undefined ? estimatedHandicap : null);
+    const capExtra = effectiveHandicap === null ? 0 : Math.round(effectiveHandicap / 18);
+    let total = 0;
+    for (let h = 1; h <= round.holes; h++) {
+      if (isHoleSkipped(round, h)) continue;
+      const score = round.scores[h]?.[0];
+      const par = round.pars?.[h];
+      if (!isFilled(score) || !isFilled(par)) continue;
+      const cap = Number(par) + 2 + capExtra;
+      total += Math.min(Number(score), cap);
+    }
+    return total;
+  }
+
+  // Score Differential = (113 / Slope) × (AGS − Course Rating)
+  // PCC ignored (treat as 0)
+  function calcDifferential(round, handicapBefore, estimatedHandicap) {
+    if (!isFilled(round.courseRating) || !isFilled(round.slopeRating)) return null;
+    const ags = calcAGS(round, handicapBefore, estimatedHandicap);
+    const diff = (113 / Number(round.slopeRating)) * (ags - Number(round.courseRating));
+    return diff;
+  }
+
+  // Walk rounds chronologically, calculating each differential using the handicap as it stood before.
+  // Returns array of {round, differential, handicapBefore, handicapAfter}
+  function computeHandicapProgression() {
+    const t = loadT();
+    const tracked = getTrackedRounds();
+    const qualifying = tracked.filter(r => isFilled(r.courseRating) && isFilled(r.slopeRating));
+    const result = [];
+    let currentHandicap = null;
+    const estimated = (t.estimatedHandicap !== undefined && t.estimatedHandicap !== null && t.estimatedHandicap !== '') ? Number(t.estimatedHandicap) : null;
+    for (let i = 0; i < qualifying.length; i++) {
+      const round = qualifying[i];
+      const diff = calcDifferential(round, currentHandicap, estimated);
+      const before = currentHandicap;
+      // Update handicap based on differentials so far (using last 20 max)
+      const diffsSoFar = result.map(x => x.differential).filter(d => d !== null);
+      diffsSoFar.push(diff);
+      const recent = diffsSoFar.slice(-20);
+      const lookup = bestOfLookup(recent.length);
+      let newHandicap = null;
+      if (lookup) {
+        const sorted = [...recent].sort((a, b) => a - b);
+        const bestN = sorted.slice(0, lookup.count);
+        const avg = bestN.reduce((sum, x) => sum + x, 0) / bestN.length;
+        newHandicap = avg + lookup.adjust;
+      }
+      result.push({ round, differential: diff, handicapBefore: before, handicapAfter: newHandicap });
+      currentHandicap = newHandicap;
+    }
+    return { qualifying: result, all: tracked };
+  }
+
+  function vHandicap() {
+    const t = loadT();
+    const hasName = !!(t.name && t.name.trim());
+    const { qualifying, all } = computeHandicapProgression();
+    const currentHandicap = qualifying.length ? qualifying[qualifying.length - 1].handicapAfter : null;
+    const lookup = bestOfLookup(qualifying.length);
+
+    // Determine which rounds are "counting" (best-N of last 20)
+    let countingTimestamps = new Set();
+    if (lookup) {
+      const last20 = qualifying.slice(-20);
+      const sortedByDiff = [...last20].sort((a, b) => a.differential - b.differential);
+      sortedByDiff.slice(0, lookup.count).forEach(x => countingTimestamps.add(x.round.savedAt));
+    }
+
+    // Build display order: most recent first
+    const allDisplayed = [...all].reverse();
+
+    return `
+      <div class="spread" style="margin-bottom: 1.25rem;">
+        <h1 class="h1">Handicap</h1>
+        <button class="btn-ghost" data-a="home">Done</button>
+      </div>
+
+      ${!hasName ? `
+        <div class="card" style="text-align: center;">
+          <h3 class="h3" style="margin-bottom: 8px;">Set up your tracker</h3>
+          <p class="muted" style="margin: 0 0 16px; line-height: 1.5;">Tell us your name. Rounds where you're Player 1 will be tracked here, and we'll calculate a rolling handicap from your scores.</p>
+          <button class="btn" data-a="setTrackerName" style="max-width: 200px; margin: 0 auto;">Set name</button>
+        </div>
+      ` : `
+        <div class="winner-card" style="padding: 1.5rem 1.25rem; margin-bottom: 14px;">
+          <div class="winner-label">Handicap Index</div>
+          <h2 class="winner-name" style="font-size: 38px;">${currentHandicap !== null ? currentHandicap.toFixed(1) : '—'}</h2>
+          <div class="winner-pts">
+            ${currentHandicap !== null
+              ? `Based on ${lookup.count} of last ${Math.min(qualifying.length, 20)} round${qualifying.length === 1 ? '' : 's'}`
+              : qualifying.length === 0
+                ? `No qualifying rounds yet`
+                : `Need ${3 - qualifying.length} more round${3 - qualifying.length === 1 ? '' : 's'} with course data`}
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="spread">
+            <div>
+              <div class="muted" style="font-size: 12px; margin-bottom: 2px; font-weight: 500;">Tracking handicap for</div>
+              <div style="font-size: 16px; font-weight: 600;">${esc(t.name)}</div>
+            </div>
+            <button class="btn-2" data-a="setTrackerName">Change name</button>
+          </div>
+        </div>
+
+        ${qualifying.length < 3 ? `
+          <div class="card">
+            <div class="spread">
+              <div style="flex: 1; min-width: 0;">
+                <div class="muted" style="font-size: 12px; margin-bottom: 2px; font-weight: 500;">Estimated handicap</div>
+                <div style="font-size: 16px; font-weight: 600;">${t.estimatedHandicap !== undefined && t.estimatedHandicap !== null && t.estimatedHandicap !== '' ? Number(t.estimatedHandicap).toFixed(1) : 'Not set'}</div>
+                <div class="muted" style="font-size: 11px; margin-top: 4px; line-height: 1.4;">Used to cap scores for the first 3 rounds. Replaced by the calculated handicap after that.</div>
+              </div>
+              <button class="btn-2" data-a="setEstimate">${t.estimatedHandicap !== undefined && t.estimatedHandicap !== null && t.estimatedHandicap !== '' ? 'Edit' : 'Set'}</button>
+            </div>
+          </div>
+        ` : ''}
+
+        ${all.length === 0 ? `
+          <div class="card" style="text-align: center;">
+            <p class="muted" style="margin: 0; line-height: 1.5;">No tracked rounds yet. Play an 18-hole round with "${esc(t.name)}" as Player 1, and it'll appear here.</p>
+          </div>
+        ` : `
+          <h3 class="h3" style="margin: 18px 0 10px;">Your rounds</h3>
+          ${allDisplayed.map(r => {
+            const hasCourseData = isFilled(r.courseRating) && isFilled(r.slopeRating);
+            const counting = countingTimestamps.has(r.savedAt);
+            const matchingProgress = qualifying.find(q => q.round.savedAt === r.savedAt);
+            const diff = matchingProgress?.differential;
+            const date = new Date(r.savedAt);
+            const courseLabel = r.courseNameOverride || r.courseName || r.name || 'Round';
+            const gross = p1Gross(r);
+            const par = parTotal(r);
+            const parDiff = par ? gross - par : null;
+            const parDiffStr = parDiff === null ? '' : (parDiff === 0 ? 'E' : (parDiff > 0 ? `+${parDiff}` : `${parDiff}`));
+            return `
+              <div class="card" data-a="editCourseData" data-ts="${r.savedAt}" style="cursor: pointer; ${counting ? 'border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow);' : ''}">
+                <div class="spread" style="margin-bottom: 6px;">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${esc(courseLabel)}${counting ? ` <span style="color: var(--accent-bright); font-size: 11px; font-weight: 700; margin-left: 4px;">COUNTING</span>` : ''}</div>
+                    <div class="muted" style="font-size: 12px; margin-top: 2px;">${date.toLocaleDateString()} · Gross ${gross}${parDiffStr ? ` (${parDiffStr})` : ''}</div>
+                  </div>
+                  ${hasCourseData
+                    ? `<div style="text-align: right;"><div style="font-size: 18px; font-weight: 700;">${diff !== null ? diff.toFixed(1) : '—'}</div><div class="muted" style="font-size: 11px;">differential</div></div>`
+                    : `<div style="font-size: 12px; color: var(--warn); font-weight: 600;">Add course details</div>`
+                  }
+                </div>
+                ${hasCourseData ? `<div class="muted" style="font-size: 11px;">CR ${r.courseRating} · Slope ${r.slopeRating}</div>` : ''}
+              </div>
+            `;
+          }).join('')}
+        `}
+
+        <button class="btn-2" data-a="handicapHowto" style="width: 100%; margin-top: 14px;">How is this calculated?</button>
+      `}
+    `;
+  }
+
+  function vHandicapHowto() {
+    return `
+      <div class="spread" style="margin-bottom: 1.25rem;">
+        <h1 class="h1">How it's calculated</h1>
+        <button class="btn-ghost" data-a="handicap">Done</button>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">The basics</h3>
+        <p style="margin: 0 0 12px; font-size: 14px; line-height: 1.6;">
+          Your TobiGolf handicap is based on the World Handicap System (WHS), the same system used by golf clubs worldwide. It's an approximation built for casual players without a club affiliation, so it skips a few of the official adjustments &mdash; close enough to be useful, lightweight enough to use on your own.
+        </p>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;">
+          To track properly, only 18-hole rounds where you're Player 1 count. You also need to add the course's rating and slope after each round.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">Step 1 — Score Differential</h3>
+        <p style="margin: 0 0 10px; font-size: 14px; line-height: 1.6;">
+          Each qualifying round produces a "Score Differential" that represents how well you played, normalised against the course's difficulty.
+        </p>
+        <div style="background: var(--bg-deep); border: 1px solid var(--border); padding: 12px; border-radius: var(--radius-md); font-family: ui-monospace, monospace; font-size: 12px; margin: 0 0 10px; color: var(--accent-bright);">
+          Differential = (113 / Slope) × (AGS &minus; Course Rating)
+        </div>
+        <p style="margin: 0 0 8px; font-size: 14px; line-height: 1.6;">
+          So a tougher course (higher slope) makes the same round produce a lower differential &mdash; rewarding you for scoring well in harder conditions.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">Step 2 — Adjusted Gross Score</h3>
+        <p style="margin: 0 0 10px; font-size: 14px; line-height: 1.6;">
+          Your raw gross score gets capped per hole to stop one disaster hole skewing your handicap. Each hole's score is capped at:
+        </p>
+        <div style="background: var(--bg-deep); border: 1px solid var(--border); padding: 12px; border-radius: var(--radius-md); font-family: ui-monospace, monospace; font-size: 12px; margin: 0 0 10px; color: var(--accent-bright);">
+          Cap = Par + 2 + (Handicap &divide; 18, rounded)
+        </div>
+        <p style="margin: 0 0 8px; font-size: 14px; line-height: 1.6;">
+          For your first 3 rounds (before there's a calculated handicap), we use your estimated handicap. After that, your real handicap takes over.
+        </p>
+        <p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-muted);">
+          <strong style="color: var(--text);">Simplification:</strong> Real WHS uses each hole's stroke index to distribute shots to specific holes. We use a flat per-hole average instead. For most handicaps it's within a stroke or two of the official method.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">Step 3 — Handicap Index</h3>
+        <p style="margin: 0 0 10px; font-size: 14px; line-height: 1.6;">
+          Your handicap is the average of your best differentials from your last 20 rounds. The number of "best" differentials counted depends on how many rounds you have:
+        </p>
+        <div style="background: var(--bg-deep); border: 1px solid var(--border); padding: 12px 14px; border-radius: var(--radius-md); font-size: 12px; margin: 0 0 10px;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr style="border-bottom: 1px solid var(--border);"><th style="text-align: left; padding: 4px 0; font-weight: 600;">Rounds</th><th style="text-align: left; padding: 4px 0; font-weight: 600;">Take</th><th style="text-align: right; padding: 4px 0; font-weight: 600;">Adjustment</th></tr>
+            <tr><td style="padding: 3px 0;">3</td><td>Best 1</td><td style="text-align: right;">&minus;2.0</td></tr>
+            <tr><td style="padding: 3px 0;">4</td><td>Best 1</td><td style="text-align: right;">&minus;1.0</td></tr>
+            <tr><td style="padding: 3px 0;">5</td><td>Best 1</td><td style="text-align: right;">0</td></tr>
+            <tr><td style="padding: 3px 0;">6</td><td>Best 2 avg</td><td style="text-align: right;">&minus;1.0</td></tr>
+            <tr><td style="padding: 3px 0;">7&ndash;8</td><td>Best 2 avg</td><td style="text-align: right;">0</td></tr>
+            <tr><td style="padding: 3px 0;">9&ndash;11</td><td>Best 3 avg</td><td style="text-align: right;">0</td></tr>
+            <tr><td style="padding: 3px 0;">12&ndash;14</td><td>Best 4 avg</td><td style="text-align: right;">0</td></tr>
+            <tr><td style="padding: 3px 0;">15&ndash;16</td><td>Best 5 avg</td><td style="text-align: right;">0</td></tr>
+            <tr><td style="padding: 3px 0;">17&ndash;18</td><td>Best 6 avg</td><td style="text-align: right;">0</td></tr>
+            <tr><td style="padding: 3px 0;">19</td><td>Best 7 avg</td><td style="text-align: right;">0</td></tr>
+            <tr><td style="padding: 3px 0;">20+</td><td>Best 8 avg</td><td style="text-align: right;">0</td></tr>
+          </table>
+        </div>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;">
+          The adjustment for low round counts means your handicap starts conservative and settles as you play more. Rounds counting toward your current handicap are highlighted with a green border on the tracker.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">Gross, not net</h3>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;">
+          Your handicap is always calculated from your <strong>gross</strong> score &mdash; the actual strokes you took &mdash; not your net score with handicap shots applied. This is how WHS works officially. The handicap shots you set on a round are just for in-round scoring against your group; they don't affect what gets fed into the tracker.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="h3" style="color: var(--accent-bright);">What we skip</h3>
+        <p style="margin: 0 0 10px; font-size: 14px; line-height: 1.6;">
+          A few official WHS adjustments we don't do, to keep things simple:
+        </p>
+        <ul style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.6; color: var(--text);">
+          <li style="margin-bottom: 6px;"><strong>PCC</strong> (Playing Conditions Calculation) &mdash; daily course/weather adjustment, requires central data</li>
+          <li style="margin-bottom: 6px;"><strong>Stroke index</strong> &mdash; real WHS distributes handicap shots to specific holes</li>
+          <li style="margin-bottom: 6px;"><strong>Soft/hard caps</strong> on handicap movement &mdash; rules limiting how fast your handicap can change</li>
+          <li><strong>9-hole rounds</strong> &mdash; only full 18-hole rounds count here</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-muted);">
+          Bottom line: this is a personal tracker, not an official handicap. It won't be accepted by clubs or competitions. But if you play casually and want a number that genuinely reflects your form, it does the job.
+        </p>
+      </div>
+    `;
+  }
+
+  function vHistory() {
+    const h = loadH();
+    return `
+      <div class="spread" style="margin-bottom: 1.25rem;">
+        <h1 class="h1">Past rounds</h1>
+        <button class="btn-ghost" data-a="home">Done</button>
+      </div>
+      ${h.length === 0 ? `<div class="empty">No saved rounds yet.</div>` : h.map((r, i) => {
+        const isSolo = r.players.length === 1;
+        const standard = isStandardMode(r);
+        const t = totals(r);
+        const date = new Date(r.savedAt);
+        const gt = grossTotals(r);
+        const par = parTotal(r);
+        // Determine winner for display
+        let winnerHTML = '';
+        if (isSolo) {
+          winnerHTML = `Score: <span style="color: var(--accent-bright); font-weight: 600;">${gt[0]}</span>${par ? ` (par ${par})` : ''}`;
+        } else if (standard) {
+          // Lowest net wins
+          const nets = r.players.map((_, idx) => netTotal(r, idx));
+          let wIdx = 0;
+          for (let k = 0; k < nets.length; k++) {
+            if (r.leftAfter?.[k] !== undefined) continue;
+            if (nets[k] < nets[wIdx] || r.leftAfter?.[wIdx] !== undefined) wIdx = k;
+          }
+          winnerHTML = `Winner: <span style="color: var(--accent-bright); font-weight: 600;">${esc(r.players[wIdx].name)}</span> (net ${nets[wIdx]})`;
+        } else {
+          const wIdx = t.indexOf(Math.max(...t));
+          winnerHTML = `Winner: <span style="color: var(--accent-bright); font-weight: 600;">${esc(r.players[wIdx].name)}</span> (${t[wIdx]} pts)`;
+        }
+        // Mode badge (only for multi-player rounds)
+        const modeBadge = isSolo ? '' : (standard
+          ? '<span class="mode-badge mode-standard">Standard</span>'
+          : '<span class="mode-badge mode-tobigolf">TobiGolf</span>');
+        return `
+          <div class="card" data-a="openH" data-i="${i}" style="cursor: pointer;">
+            <div class="spread" style="margin-bottom: 6px;">
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; font-size: 15px;">${esc(r.name) || 'Round'}${modeBadge}</div>
+                <div class="muted" style="margin-top: 2px;">${date.toLocaleDateString()} · ${holesLabel(r)}</div>
+              </div>
+              <button class="btn-danger" data-a="delH" data-i="${i}">Delete</button>
+            </div>
+            <div class="muted" style="font-size: 12px;">${winnerHTML}</div>
+          </div>
+        `;
+      }).join('')}
+    `;
+  }
+
+  // ============================================================
+  // DISTANCE TOOL (lightweight GPS yardage measurement)
+  // ============================================================
+
+  function vDistance() {
+    const dist = s.distMeasurement; // {yards, metres} or null
+    const status = s.distStatus || 'locating'; // 'locating' | 'ready' | 'denied' | 'error' | 'loading'
+    let statusMsg = '';
+    if (status === 'loading') statusMsg = 'Loading map…';
+    else if (status === 'locating') statusMsg = 'Getting your location…';
+    else if (status === 'denied') statusMsg = 'Location permission denied. Enable in your device settings to use this feature.';
+    else if (status === 'error') statusMsg = 'Couldn\'t get your location. Check signal and try again.';
+
+    return `
+      <div class="dist-overlay">
+        <div class="dist-header">
+          <div>
+            <div class="dist-readout">${dist ? `${dist.yards} yd` : '— yd'}</div>
+            <div class="dist-readout-sub">${dist ? `${dist.metres} m · GPS-accurate` : 'Tap the map to measure'}</div>
+          </div>
+          <button class="btn-2" data-a="closeDist">Close</button>
+        </div>
+        <div class="dist-map" id="dist-map">
+          ${status !== 'ready' ? `<div class="dist-status">${esc(statusMsg)}</div>` : ''}
+          ${status === 'ready' ? `<div class="dist-recenter" data-a="recenter" title="Recenter on me">⊙</div>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  // Haversine formula — straight-line distance between two GPS points in metres
+  function haversineMetres(lat1, lon1, lat2, lon2) {
+    const R = 6371000; // earth radius in metres
+    const toRad = deg => deg * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  // Load Leaflet on demand. Returns a promise that resolves when L is available.
+  function loadLeaflet() {
+    if (window.L) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      // CSS
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      css.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+      css.crossOrigin = '';
+      document.head.appendChild(css);
+      // JS
+      const js = document.createElement('script');
+      js.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      js.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+      js.crossOrigin = '';
+      js.onload = () => resolve();
+      js.onerror = () => reject(new Error('Failed to load map library'));
+      document.head.appendChild(js);
+    });
+  }
+
+  function initDistanceMap() {
+    s.distStatus = 'loading';
+    s.distMeasurement = null;
+    // Don't re-render here — we'll let the status update via direct DOM if needed,
+    // otherwise the initial render already shows "Loading map…"
+    loadLeaflet().then(() => {
+      s.distStatus = 'locating';
+      // Update status text directly without full re-render (would tear down map)
+      const statusEl = document.querySelector('.dist-status');
+      if (statusEl) statusEl.textContent = 'Getting your location…';
+
+      if (!navigator.geolocation) {
+        s.distStatus = 'error';
+        if (statusEl) statusEl.textContent = 'GPS not available on this device.';
+        return;
+      }
+
+      // Request high accuracy
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const userLat = pos.coords.latitude;
+          const userLon = pos.coords.longitude;
+          window._distUserLatLng = [userLat, userLon];
+          setupMap(userLat, userLon);
+        },
+        err => {
+          if (err.code === err.PERMISSION_DENIED) {
+            s.distStatus = 'denied';
+            if (statusEl) statusEl.textContent = 'Location permission denied. Enable in your device settings to use this feature.';
+          } else {
+            s.distStatus = 'error';
+            if (statusEl) statusEl.textContent = 'Couldn\'t get your location. Check signal and try again.';
+          }
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
+      );
+    }).catch(() => {
+      s.distStatus = 'error';
+      const statusEl = document.querySelector('.dist-status');
+      if (statusEl) statusEl.textContent = 'Couldn\'t load map. Check your signal.';
+    });
+  }
+
+  function setupMap(userLat, userLon) {
+    const L = window.L;
+    const container = document.getElementById('dist-map');
+    if (!container) return;
+    // Remove the status div now that we have a position
+    const status = container.querySelector('.dist-status');
+    if (status) status.remove();
+
+    const map = L.map('dist-map', {
+      zoomControl: true,
+      attributionControl: true
+    }).setView([userLat, userLon], 18);
+
+    // Esri World Imagery (satellite) — free, no API key needed
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri',
+      maxZoom: 19
+    }).addTo(map);
+
+    // User marker (blue dot)
+    const userIcon = L.divIcon({
+      className: 'user-marker',
+      html: '<div style="width: 16px; height: 16px; background: #4a90e2; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 8px rgba(74,144,226,0.8);"></div>',
+      iconSize: [22, 22],
+      iconAnchor: [11, 11]
+    });
+    const userMarker = L.marker([userLat, userLon], { icon: userIcon, interactive: false }).addTo(map);
+
+    let targetMarker = null;
+    let line = null;
+
+    // Add the recenter button (state was set via render, but we removed status which contained it; re-add)
+    if (!container.querySelector('.dist-recenter')) {
+      const btn = document.createElement('div');
+      btn.className = 'dist-recenter';
+      btn.dataset.a = 'recenter';
+      btn.title = 'Recenter on me';
+      btn.textContent = '⊙';
+      btn.addEventListener('click', () => {
+        map.setView([userLat, userLon], map.getZoom());
+      });
+      container.appendChild(btn);
+    }
+
+    map.on('click', e => {
+      const tLat = e.latlng.lat;
+      const tLon = e.latlng.lng;
+      const metres = haversineMetres(userLat, userLon, tLat, tLon);
+      const yards = Math.round(metres * 1.09361);
+      const metresRounded = Math.round(metres);
+
+      // Update or add the target marker
+      const targetIcon = L.divIcon({
+        className: 'target-marker',
+        html: '<div style="width: 14px; height: 14px; background: #97c459; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 6px rgba(151,196,89,0.9);"></div>',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+      if (targetMarker) {
+        targetMarker.setLatLng([tLat, tLon]);
+      } else {
+        targetMarker = L.marker([tLat, tLon], { icon: targetIcon, interactive: false }).addTo(map);
+      }
+
+      // Update or add the line
+      if (line) {
+        line.setLatLngs([[userLat, userLon], [tLat, tLon]]);
+      } else {
+        line = L.polyline([[userLat, userLon], [tLat, tLon]], {
+          color: '#97c459',
+          weight: 3,
+          opacity: 0.9,
+          dashArray: '8,6'
+        }).addTo(map);
+      }
+
+      // Update the readout
+      s.distMeasurement = { yards, metres: metresRounded };
+      const readout = document.querySelector('.dist-readout');
+      const sub = document.querySelector('.dist-readout-sub');
+      if (readout) readout.textContent = `${yards} yd`;
+      if (sub) sub.textContent = `${metresRounded} m · GPS-accurate`;
+    });
+
+    s.distStatus = 'ready';
+    window._distMap = map;
+
+    // Watch position to keep user marker current (low frequency)
+    window._distWatchId = navigator.geolocation.watchPosition(
+      pos => {
+        const newLat = pos.coords.latitude;
+        const newLon = pos.coords.longitude;
+        window._distUserLatLng = [newLat, newLon];
+        userMarker.setLatLng([newLat, newLon]);
+        // Update line if a target is set
+        if (line && targetMarker) {
+          const tLatLng = targetMarker.getLatLng();
+          line.setLatLngs([[newLat, newLon], [tLatLng.lat, tLatLng.lng]]);
+          const m = haversineMetres(newLat, newLon, tLatLng.lat, tLatLng.lng);
+          const yd = Math.round(m * 1.09361);
+          s.distMeasurement = { yards: yd, metres: Math.round(m) };
+          const readout = document.querySelector('.dist-readout');
+          const subEl = document.querySelector('.dist-readout-sub');
+          if (readout) readout.textContent = `${yd} yd`;
+          if (subEl) subEl.textContent = `${Math.round(m)} m · GPS-accurate`;
+        }
+      },
+      () => {},
+      { enableHighAccuracy: true, maximumAge: 5000 }
+    );
+  }
+
+  function vModal() {
+    if (s.modal.type === 'tobi') {
+      const r = s.round;
+      const active = activePlayerIndices(r, r.currentHole);
+      const lastHolePlayed = r.currentHole - 1;
+      const error = s.modal.error;
+      // Determine the leaver's points so we can show in the modal explanation
+      const selectedLeaver = s.modal.selectedLeaver !== undefined ? s.modal.selectedLeaver : (active[0] ?? 0);
+      const leaverInfo = playerTotalInfo(r, selectedLeaver);
+      return `
+        <div class="modal-bg" data-a="closeM">
+          <div class="modal" data-stop-bg="1">
+            <h3 class="modal-title">Tobi Rule</h3>
+            <p class="muted" style="margin: 0 0 16px; line-height: 1.5;">
+              ${lastHolePlayed === 0
+                ? `A player has left before play. They won't take part in any holes.`
+                : `A player has left. Hole ${lastHolePlayed} was their last hole. Their points transfer to whoever you choose.`}
+            </p>
+            <label class="muted" style="display: block; margin-bottom: 6px; font-weight: 500;">Who's leaving?</label>
+            <select class="select" id="tg-leaver" style="margin-bottom: 14px;">
+              ${active.map(i => {
+                const info = playerTotalInfo(r, i);
+                return `<option value="${i}" ${i === selectedLeaver ? 'selected' : ''}>${esc(r.players[i].name)} · ${info.displayed} pts</option>`;
+              }).join('')}
+            </select>
+            <label class="muted" style="display: block; margin-bottom: 6px; font-weight: 500;">Transfer points to:</label>
+            <select class="select" id="tg-recipient" style="margin-bottom: ${error ? '8px' : '18px'};">
+              ${active.map(i => `<option value="${i}">${esc(r.players[i].name)}</option>`).join('')}
+            </select>
+            ${error ? `<div style="background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(226,75,74,0.3); padding: 9px 12px; border-radius: var(--radius-md); font-size: 12px; margin-bottom: 14px; font-weight: 500;">${esc(error)}</div>` : ''}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn-2" data-a="closeM">Cancel</button>
+              <button class="btn" data-a="confirmTobi">Confirm</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    if (s.modal.type === 'confirm') {
+      return `
+        <div class="modal-bg" data-a="closeM">
+          <div class="modal" data-stop-bg="1">
+            <h3 class="modal-title">${esc(s.modal.title)}</h3>
+            <p style="margin: 0 0 18px; font-size: 14px; color: var(--text-muted); line-height: 1.5;">${esc(s.modal.body)}</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn-2" data-a="closeM">Cancel</button>
+              <button class="btn" data-a="confirmM" style="${s.modal.danger ? 'background: var(--danger); box-shadow: 0 4px 14px -4px rgba(226,75,74,0.4); color: white;' : ''}">${esc(s.modal.confirmLabel || 'Confirm')}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    if (s.modal.type === 'blanks') {
+      return `
+        <div class="modal-bg" data-a="closeM">
+          <div class="modal" data-stop-bg="1">
+            <h3 class="modal-title">Missing scores</h3>
+            <p style="margin: 0 0 12px; font-size: 14px; color: var(--text-muted);">Some scores or pars haven't been filled in.</p>
+            <div style="max-height: 200px; overflow-y: auto; font-size: 13px; margin-bottom: 16px; background: var(--bg-deep); border-radius: var(--radius-md); padding: 10px 14px;">
+              ${s.modal.list.slice(0, 12).map(b => `<div style="padding: 4px 0;">Hole ${b.hole}: ${b.type === 'par' ? 'par missing' : `${esc(s.round.players[b.player].name)} score missing`}</div>`).join('')}
+              ${s.modal.list.length > 12 ? `<div class="muted">…and ${s.modal.list.length - 12} more</div>` : ''}
+            </div>
+            <button class="btn" data-a="closeM">OK</button>
+          </div>
+        </div>
+      `;
+    }
+    if (s.modal.type === 'estimate') {
+      const t = loadT();
+      const isFirstTime = !s.modal.hasExistingEstimate;
+      return `
+        <div class="modal-bg" data-a="closeM">
+          <div class="modal" data-stop-bg="1">
+            <h3 class="modal-title">${isFirstTime ? 'Estimated handicap' : 'Edit estimated handicap'}</h3>
+            <p class="muted" style="margin: 0 0 14px; line-height: 1.5;">Your rough current handicap. Used to cap scores accurately for the first 3 rounds while we build up real data. After that it's replaced by the calculated handicap.</p>
+            <label class="muted" style="display: block; margin-bottom: 6px; font-weight: 500;">Handicap (optional)</label>
+            <input class="num" type="number" step="0.1" id="tg-est" placeholder="e.g. 18" value="${t.estimatedHandicap ?? ''}" style="margin-bottom: 18px;" autofocus />
+            ${s.modal.error ? `<div style="background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(226,75,74,0.3); padding: 9px 12px; border-radius: var(--radius-md); font-size: 12px; margin-bottom: 14px; font-weight: 500;">${esc(s.modal.error)}</div>` : ''}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn-2" data-a="closeM">${isFirstTime ? 'Skip' : 'Cancel'}</button>
+              <button class="btn" data-a="saveEstimate">Save</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    if (s.modal.type === 'trackerName') {
+      const t = loadT();
+      const isFirstTime = !t.name || !t.name.trim();
+      return `
+        <div class="modal-bg" data-a="closeM">
+          <div class="modal" data-stop-bg="1">
+            <h3 class="modal-title">${isFirstTime ? 'Set tracker name' : 'Change tracker name'}</h3>
+            ${!isFirstTime ? `
+              <div style="background: var(--warn-bg); color: var(--warn-light); border: 1px solid rgba(239,159,39,0.3); padding: 12px; border-radius: var(--radius-md); font-size: 13px; line-height: 1.5; margin-bottom: 14px;">
+                Changing the tracked name will hide your current handicap data. Past rounds aren't deleted — they'll reappear if you change the name back.
+              </div>
+            ` : `
+              <p class="muted" style="margin: 0 0 14px; line-height: 1.5;">When this name is Player 1 in a round, it'll be tracked here.</p>
+            `}
+            <label class="muted" style="display: block; margin-bottom: 6px; font-weight: 500;">Name</label>
+            <input class="input" id="tg-tracker-name" placeholder="e.g. Will" value="${esc(t.name || '')}" style="margin-bottom: 18px;" autofocus />
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn-2" data-a="closeM">Cancel</button>
+              <button class="btn" data-a="saveTrackerName">Save</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    if (s.modal.type === 'courseData') {
+      const t = loadT();
+      const ts = s.modal.ts;
+      const allRounds = loadH();
+      const round = allRounds.find(r => r.savedAt === ts);
+      if (!round) return '';
+      const existing = t.courseData[ts] || {};
+      const courseName = existing.courseName ?? round.courseName ?? '';
+      const courseRating = existing.courseRating ?? '';
+      const slopeRating = existing.slopeRating ?? '';
+      return `
+        <div class="modal-bg" data-a="closeM">
+          <div class="modal" data-stop-bg="1">
+            <h3 class="modal-title">Course details</h3>
+            <p class="muted" style="margin: 0 0 14px; line-height: 1.5;">Add the course rating and slope to calculate this round's differential.</p>
+
+            <label class="muted" style="display: block; margin-bottom: 6px; font-weight: 500;">Course name</label>
+            <input class="input" id="tg-cd-name" placeholder="e.g. Royal St George's" value="${esc(courseName)}" style="margin-bottom: 12px;" />
+
+            <label class="muted" style="display: block; margin-bottom: 6px; font-weight: 500;">Course rating</label>
+            <input class="num" type="number" step="0.1" id="tg-cd-cr" placeholder="e.g. 72.4" value="${courseRating}" style="margin-bottom: 12px;" />
+
+            <label class="muted" style="display: block; margin-bottom: 6px; font-weight: 500;">Slope rating</label>
+            <input class="num" type="number" id="tg-cd-sr" placeholder="e.g. 113" value="${slopeRating}" style="margin-bottom: 18px;" />
+
+            ${s.modal.error ? `<div style="background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(226,75,74,0.3); padding: 9px 12px; border-radius: var(--radius-md); font-size: 12px; margin-bottom: 14px; font-weight: 500;">${esc(s.modal.error)}</div>` : ''}
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn-2" data-a="closeM">Cancel</button>
+              <button class="btn" data-a="saveCourseData">Save</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    return '';
+  }
+
+  function updateStartButton() {
+    const btn = document.querySelector('[data-a="start"]');
+    if (!btn) return;
+    const o = s.setup;
+    const holesValid = !o.holesError && o.holes >= 1 && o.holes <= 18;
+    const playersValid = o.players.length >= 1 && o.players.length <= 4 && o.players.every(p => p.name && p.name.trim());
+    const specialsValid = o.specials.every(sp => sp.hole >= 1 && sp.hole <= o.holes && sp.mult >= 2);
+    const isSoloSetup = o.players.length === 1;
+    const modeValid = isSoloSetup || o.mode === 'tobigolf' || o.mode === 'standard';
+    btn.disabled = !(holesValid && playersValid && specialsValid && modeValid);
+  }
+
+  function bind() {
+    document.querySelectorAll('[data-a]').forEach(el => el.addEventListener('click', handle));
+    document.querySelectorAll('[data-pn]').forEach(el => el.addEventListener('input', e => {
+      s.setup.players[+e.target.dataset.pn].name = e.target.value; saveS(); updateStartButton();
+    }));
+    document.querySelectorAll('[data-ps]').forEach(el => el.addEventListener('change', e => {
+      s.setup.players[+e.target.dataset.ps].shots = +e.target.value; saveS();
+    }));
+    document.querySelectorAll('[data-sh]').forEach(el => el.addEventListener('input', e => {
+      s.setup.specials[+e.target.dataset.sh].hole = +e.target.value; saveS(); updateStartButton();
+    }));
+    document.querySelectorAll('[data-sm]').forEach(el => el.addEventListener('input', e => {
+      const raw = e.target.value;
+      const v = raw === '' ? 0 : +raw;
+      s.setup.specials[+e.target.dataset.sm].mult = v;
+      saveS(); updateStartButton();
+    }));
+    const nameI = document.getElementById('tg-name');
+    if (nameI) nameI.addEventListener('input', e => { s.setup.name = e.target.value; saveS(); });
+    const courseI = document.getElementById('tg-course');
+    if (courseI) courseI.addEventListener('input', e => { s.setup.courseName = e.target.value; saveS(); });
+    const modeI = document.getElementById('tg-mode');
+    if (modeI) modeI.addEventListener('change', e => {
+      const v = e.target.value;
+      s.setup.mode = v || null;
+      // Clear specials if switching to standard
+      if (s.setup.mode === 'standard') s.setup.specials = [];
+      saveS();
+      render();
+    });
+    const holesI = document.getElementById('tg-holes');
+    if (holesI) holesI.addEventListener('input', e => {
+      const v = +e.target.value;
+      const raw = e.target.value;
+      const el = e.target;
+      const card = el.closest('.card');
+      const existingErr = card?.querySelector('.input-error-msg');
+
+      let errMsg = null;
+      if (raw === '') errMsg = null; // empty is OK while typing, just don't save
+      else if (isNaN(v) || v < 1) errMsg = 'Min 1 hole';
+      else if (v > 18) errMsg = 'Max 18 holes';
+
+      if (errMsg) {
+        el.classList.add('error');
+        s.setup.holes = v;
+        s.setup.holesError = errMsg;
+        if (existingErr) existingErr.textContent = errMsg;
+        else {
+          const div = document.createElement('div');
+          div.className = 'input-error-msg';
+          div.textContent = errMsg;
+          el.parentNode.appendChild(div);
+        }
+      } else {
+        el.classList.remove('error');
+        if (existingErr) existingErr.remove();
+        s.setup.holes = v || 1;
+        s.setup.holesError = null;
+      }
+      saveS();
+      updateStartButton();
+    });
+
+    document.querySelectorAll('[data-si]').forEach(el => el.addEventListener('input', e => {
+      const i = +e.target.dataset.si; const r = s.round; const h = r.currentHole;
+      if (!r.scores[h]) r.scores[h] = r.players.map(() => null);
+      const v = e.target.value;
+      r.scores[h][i] = v === '' ? null : Number(v);
+      if (r.pickups?.[h]?.[i]) r.pickups[h][i] = false;
+      saveS(); render();
+    }));
+
+    const par = document.getElementById('tg-par');
+    if (par) par.addEventListener('input', e => {
+      const r = s.round; if (!r.pars) r.pars = {};
+      if (!r.parError) r.parError = {};
+      const h = r.currentHole;
+      const v = e.target.value;
+      const el = e.target;
+      const wrapper = el.parentNode;
+      const existingErr = wrapper?.querySelector('.input-error-msg');
+
+      let errMsg = null;
+      if (v === '') {
+        errMsg = null;
+      } else {
+        const n = Number(v);
+        if (isNaN(n)) errMsg = 'Must be a number';
+        else if (n < 3) errMsg = 'Min par 3';
+        else if (n > 5) errMsg = 'Max par 5';
+      }
+
+      if (errMsg) {
+        el.classList.add('error');
+        r.parError[h] = errMsg;
+        if (existingErr) existingErr.textContent = errMsg;
+        else {
+          const div = document.createElement('div');
+          div.className = 'input-error-msg';
+          div.textContent = errMsg;
+          wrapper.appendChild(div);
+        }
+        // Don't save par value when invalid
+        r.pars[h] = null;
+        saveS();
+        // Don't re-render — keep focus while typing
+      } else {
+        el.classList.remove('error');
+        if (existingErr) existingErr.remove();
+        delete r.parError[h];
+        r.pars[h] = v === '' ? null : Number(v);
+        // Recompute pickup scores for this hole
+        if (r.pickups?.[h] && isFilled(r.pars[h])) {
+          Object.keys(r.pickups[h]).forEach(pi => {
+            if (r.pickups[h][pi]) {
+              if (!r.scores[h]) r.scores[h] = r.players.map(() => null);
+              r.scores[h][pi] = Number(r.pars[h]) + 4;
+            }
+          });
+        }
+        saveS();
+        render();
+      }
+    });
+
+    document.querySelectorAll('[data-stop-bg]').forEach(el => el.addEventListener('click', e => e.stopPropagation()));
+  }
+
+  function handle(e) {
+    const a = e.currentTarget.dataset.a;
+    const i = e.currentTarget.dataset.i;
+    const r = s.round;
+    if (a === 'delH') e.stopPropagation();
+
+    switch (a) {
+      case 'home': s.view = 'home'; s.summaryRound = null; break;
+      case 'new': {
+        // If there's an active round, warn before discarding it
+        if (s.round) {
+          s.modal = { type: 'confirm', title: 'Start a new round?', body: "You've got a round in progress. Starting a new one will discard the current round — it won't be saved.", confirmLabel: 'Start new round', danger: true, action: 'newConfirmed' };
+          break;
+        }
+        const t = loadT();
+        const p1Name = t.name || '';
+        s.view = 'setup';
+        s.setup = { name: '', courseName: '', holes: 18, players: [{ name: p1Name, shots: 0 }], specials: [], mode: null };
+        break;
+      }
+      case 'resume': s.view = 'play'; break;
+      case 'history': s.view = 'history'; s.summaryRound = null; break;
+      case 'rules': s.view = 'rules'; break;
+      case 'handicap': s.view = 'handicap'; break;
+      case 'handicapHowto': s.view = 'handicapHowto'; break;
+      case 'setTrackerName': s.modal = { type: 'trackerName' }; break;
+      case 'saveTrackerName': {
+        const newName = document.getElementById('tg-tracker-name').value.trim();
+        const t = loadT();
+        const wasFirstTime = !t.name || !t.name.trim();
+        t.name = newName;
+        saveT(t);
+        if (wasFirstTime && newName) {
+          // Chain into estimate prompt for first-time users
+          s.modal = { type: 'estimate', hasExistingEstimate: false };
+        } else {
+          s.modal = null;
+        }
+        break;
+      }
+      case 'setEstimate': {
+        const t = loadT();
+        s.modal = { type: 'estimate', hasExistingEstimate: t.estimatedHandicap !== undefined && t.estimatedHandicap !== null && t.estimatedHandicap !== '' };
+        break;
+      }
+      case 'saveEstimate': {
+        const raw = document.getElementById('tg-est').value;
+        const t = loadT();
+        if (raw === '') {
+          // User skipped/cleared
+          delete t.estimatedHandicap;
+          saveT(t);
+          s.modal = null;
+          break;
+        }
+        const v = Number(raw);
+        if (isNaN(v) || v < 0 || v > 54) {
+          s.modal.error = 'Enter a number between 0 and 54.';
+          break;
+        }
+        t.estimatedHandicap = v;
+        saveT(t);
+        s.modal = null;
+        break;
+      }
+      case 'editCourseData': {
+        const ts = +e.currentTarget.dataset.ts;
+        s.modal = { type: 'courseData', ts };
+        break;
+      }
+      case 'saveCourseData': {
+        const ts = s.modal.ts;
+        const cName = document.getElementById('tg-cd-name').value.trim();
+        const crRaw = document.getElementById('tg-cd-cr').value;
+        const srRaw = document.getElementById('tg-cd-sr').value;
+        const cr = crRaw === '' ? null : Number(crRaw);
+        const sr = srRaw === '' ? null : Number(srRaw);
+        // Validate
+        if (cr === null || sr === null || isNaN(cr) || isNaN(sr)) {
+          s.modal.error = 'Course rating and slope are required.';
+          break;
+        }
+        if (cr < 60 || cr > 80) {
+          s.modal.error = 'Course rating should be between 60 and 80.';
+          break;
+        }
+        if (sr < 55 || sr > 155) {
+          s.modal.error = 'Slope rating should be between 55 and 155.';
+          break;
+        }
+        const t = loadT();
+        if (!t.courseData) t.courseData = {};
+        t.courseData[ts] = { courseName: cName, courseRating: cr, slopeRating: sr };
+        saveT(t);
+        s.modal = null;
+        break;
+      }
+      case 'addP': if (s.setup.players.length < 4) s.setup.players.push({ name: '', shots: 0 }); break;
+      case 'rmP': s.setup.players.splice(+i, 1); if (s.setup.players.length === 1) s.setup.specials = []; break;
+      case 'addS': s.setup.specials.push({ hole: 1, mult: 2 }); break;
+      case 'rmS': s.setup.specials.splice(+i, 1); break;
+      case 'start':
+        if (s.setup.holesError || s.setup.holes < 1 || s.setup.holes > 18) { alert('Holes must be between 1 and 18'); return; }
+        if (s.setup.players.length < 1) { alert('Need at least 1 player'); return; }
+        if (s.setup.players.length > 4) { alert('Max 4 players'); return; }
+        if (s.setup.players.some(p => !p.name.trim())) { alert('All players need a name'); return; }
+        s.round = {
+          name: s.setup.name.trim(),
+          courseName: (s.setup.courseName || '').trim(),
+          mode: s.setup.players.length === 1 ? 'tobigolf' : s.setup.mode,
+          players: s.setup.players.map(p => ({ name: p.name.trim(), shots: p.shots || 0 })),
+          holes: s.setup.holes,
+          specials: s.setup.specials.filter(sp => sp.hole >= 1 && sp.hole <= s.setup.holes && sp.mult >= 2),
+          scores: {}, pars: {}, pickups: {}, skipped: {},
+          leftAfter: {}, transferReceived: {}, transfers: [],
+          currentHole: 1, tab: 'score',
+          startedAt: Date.now()
+        };
+        s.view = 'play'; break;
+      case 'tab': r.tab = e.currentTarget.dataset.t; break;
+      case 'goto': r.currentHole = +e.currentTarget.dataset.h; break;
+      case 'prev': if (r.currentHole > 1) r.currentHole--; break;
+      case 'next': {
+        if (!isHoleComplete(r, r.currentHole)) return;
+        if (r.currentHole < r.holes) {
+          r.currentHole++;
+        } else {
+          s.modal = { type: 'confirm', title: 'Finish round?', body: 'All holes complete. Show summary?', confirmLabel: 'Show summary', action: 'finishConfirmed' };
+        }
+        break;
+      }
+      case 'pickup': {
+        const pi = +i; const h = r.currentHole;
+        const par = r.pars?.[h];
+        if (!isFilled(par)) return;
+        if (!r.pickups[h]) r.pickups[h] = {};
+        if (!r.scores[h]) r.scores[h] = r.players.map(() => null);
+        const cur = r.pickups[h][pi];
+        if (cur) {
+          r.pickups[h][pi] = false;
+          r.scores[h][pi] = null;
+        } else {
+          r.pickups[h][pi] = true;
+          r.scores[h][pi] = Number(par) + 4;
+        }
+        break;
+      }
+      case 'skip': {
+        const h = r.currentHole;
+        // Only allowed before any data entered
+        if (isHoleStarted(r, h)) return;
+        if (!r.skipped) r.skipped = {};
+        r.skipped[h] = true;
+        break;
+      }
+      case 'unskip': {
+        const h = r.currentHole;
+        if (!r.skipped) r.skipped = {};
+        r.skipped[h] = false;
+        delete r.skipped[h];
+        break;
+      }
+      case 'addHole': {
+        if (r.holes < 18) r.holes++;
+        break;
+      }
+      case 'distance': {
+        s.distOpen = true;
+        break;
+      }
+      case 'closeDist': {
+        s.distOpen = false;
+        if (window._distMap) {
+          try { window._distMap.remove(); } catch(e) {}
+          window._distMap = null;
+        }
+        if (window._distWatchId) {
+          try { navigator.geolocation.clearWatch(window._distWatchId); } catch(e) {}
+          window._distWatchId = null;
+        }
+        break;
+      }
+      case 'recenter': {
+        if (window._distMap && window._distUserLatLng) {
+          window._distMap.setView(window._distUserLatLng, window._distMap.getZoom());
+        }
+        break;
+      }
+      case 'tobi': s.modal = { type: 'tobi' }; break;
+      case 'closeM': s.modal = null; break;
+      case 'confirmTobi': {
+        const leaver = +document.getElementById('tg-leaver').value;
+        const recipient = +document.getElementById('tg-recipient').value;
+        if (leaver === recipient) {
+          s.modal.error = "Pick a different player to receive the points.";
+          s.modal.selectedLeaver = leaver;
+          break;
+        }
+
+        // Player has already left — current hole is the FIRST hole they don't play
+        const leaveHole = Math.max(0, r.currentHole - 1);
+
+        // Compute leaver's points up to leaveHole (this is what transfers)
+        let leaverPts = r.transferReceived?.[leaver] || 0;
+        for (let h = 1; h <= leaveHole; h++) {
+          const hp = calcHolePoints(r, h);
+          if (hp[leaver] !== null) leaverPts += hp[leaver];
+        }
+
+        if (!r.transferReceived) r.transferReceived = {};
+        r.transferReceived[recipient] = (r.transferReceived[recipient] || 0) + leaverPts;
+        r.leftAfter[leaver] = leaveHole;
+        if (!r.transfers) r.transfers = [];
+        r.transfers.push({ atHole: r.currentHole, fromIdx: leaver, toIdx: recipient, points: leaverPts });
+        s.modal = null;
+        break;
+      }
+      case 'finish': {
+        // Finish only allowed before hole has been started — and always requires confirmation
+        // because tapping this means user is skipping the current hole (and any after)
+        if (isHoleStarted(r, r.currentHole)) return;
+        const scoredCount = r.currentHole - 1;
+        const msg = scoredCount === 0
+          ? `No holes have been scored yet. Are you sure you want to finish?`
+          : `${scoredCount} of ${r.holes} ${scoredCount === 1 ? 'hole' : 'holes'} scored. Remaining ${r.holes - scoredCount === 1 ? 'hole won\'t' : 'holes won\'t'} count. Are you sure?`;
+        s.modal = { type: 'confirm', title: 'Finish round early?', body: msg, confirmLabel: 'Finish', action: 'finishConfirmed' };
+        break;
+      }
+      case 'saveSummary': {
+        const h = loadH();
+        h.unshift({ ...r, savedAt: Date.now() });
+        saveH(h);
+        s.round = null;
+        s.summaryRound = null;
+        s.view = 'home';
+        break;
+      }
+      case 'discardSummary':
+        s.modal = { type: 'confirm', title: 'Discard round?', body: 'This will delete the round without saving.', confirmLabel: 'Discard', danger: true, action: 'discard' };
+        break;
+      case 'abandon':
+        s.modal = { type: 'confirm', title: 'Abandon round?', body: 'This will delete the current round without saving.', confirmLabel: 'Abandon', danger: true, action: 'abandon' };
+        break;
+      case 'confirmM': {
+        const action = s.modal.action;
+        const data = s.modal;
+        s.modal = null;
+        if (action === 'abandon' || action === 'discard') {
+          s.round = null; s.summaryRound = null; s.view = 'home';
+        } else if (action === 'delHistory') {
+          const h = loadH(); h.splice(data.idx, 1); saveH(h);
+        } else if (action === 'finishConfirmed') {
+          s.summaryRound = r;
+          s.view = 'summary';
+        } else if (action === 'newConfirmed') {
+          // Discard active round and go to setup
+          s.round = null;
+          s.summaryRound = null;
+          const t = loadT();
+          const p1Name = t.name || '';
+          s.view = 'setup';
+          s.setup = { name: '', courseName: '', holes: 18, players: [{ name: p1Name, shots: 0 }], specials: [], mode: null };
+        }
+        break;
+      }
+      case 'openH': {
+        const h = loadH(); s.summaryRound = h[+i]; s.view = 'summary';
+        break;
+      }
+      case 'delH': {
+        s.modal = { type: 'confirm', title: 'Delete round?', body: 'This permanently deletes the saved round.', confirmLabel: 'Delete', danger: true, action: 'delHistory', idx: +i };
+        break;
+      }
+    }
+    saveS(); render();
+  }
+
+  load(); render();
+})();
+</script>
+</body>
+</html>
