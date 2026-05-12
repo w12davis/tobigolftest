@@ -2067,6 +2067,15 @@
       btn.className = 'dist-getpos';
       btn.type = 'button';
       btn.innerHTML = '📍 Get position';
+      // Stop click + touch + pointer events from bleeding through to the map underneath
+      ['click', 'mousedown', 'mouseup', 'touchstart', 'touchend', 'pointerdown', 'pointerup'].forEach(ev => {
+        btn.addEventListener(ev, e => { e.stopPropagation(); });
+      });
+      // Also tell Leaflet to ignore events on this element
+      if (L.DomEvent) {
+        L.DomEvent.disableClickPropagation(btn);
+        L.DomEvent.disableScrollPropagation(btn);
+      }
       btn.addEventListener('click', () => {
         if (btn.disabled) return;
         btn.disabled = true;
